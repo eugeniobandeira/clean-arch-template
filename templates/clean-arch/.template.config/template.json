@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "eugeniobandeira",
+  "classifications": ["Web", "API", "Clean Architecture", "DDD", "Vertical Slice"],
+  "identity": "EugenioBandeira.CleanArchTemplate",
+  "name": "Clean Architecture + Vertical Slice Template",
+  "description": "Template com Clean Architecture, Vertical Slice, Repository Pattern, EF Core, DynamoDB, JWT e CorrelationId para .NET 10.",
+  "shortName": "clean-arch",
+  "language": "C#",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "CleanArch",
+  "preferNameDirectory": true,
+  "symbols": {
+    "useEfCore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Incluir persistência com EF Core"
+    },
+    "useDynamoDB": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Incluir persistência com DynamoDB (AWS)"
+    },
+    "useAuth": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Incluir autenticação JWT Bearer"
+    }
+  }
+}
