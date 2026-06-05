@@ -1,4 +1,4 @@
-namespace CleanArch.Application.Features.Samples.DTOs;
+namespace CleanArch.Application.Features.Samples.Handlers.Create.Request;
 
 public sealed record CreateSampleRequest(
     string Name,

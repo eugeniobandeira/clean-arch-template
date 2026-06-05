@@ -1,4 +1,4 @@
-namespace CleanArch.Application.Features.Samples.DTOs;
+namespace CleanArch.Application.Features.Samples.Mapper;
 
 public sealed record SampleResponse(
     Guid Id,
