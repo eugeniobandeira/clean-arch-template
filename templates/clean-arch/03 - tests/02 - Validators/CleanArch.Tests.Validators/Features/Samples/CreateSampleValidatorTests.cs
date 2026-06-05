@@ -1,6 +1,10 @@
-using CleanArch.Application.Features.Samples.Validators;
+using CleanArch.Application.Features.Samples.Handlers.Create.Request;
+using CleanArch.Application.Features.Samples.Handlers.Create.Validator;
+using CleanArch.Domain.Constants;
+using CleanArch.Domain.MessageResource;
 using CleanArch.Tests.Common.Builders;
 using FluentAssertions;
+using FluentValidation.Results;
 using Xunit;
 
 namespace CleanArch.Tests.Validators.Features.Samples;
@@ -12,9 +16,9 @@ public sealed class CreateSampleValidatorTests
     [Fact]
     public async Task ShouldBeValid_WhenRequestIsCorrect()
     {
-        var request = SampleBuilder.BuildRequest();
+        CreateSampleRequest request = SampleBuilder.BuildRequest();
 
-        var result = await _sut.ValidateAsync(request);
+        ValidationResult result = await _sut.ValidateAsync(request);
 
         result.IsValid.Should().BeTrue();
     }
@@ -22,33 +26,60 @@ public sealed class CreateSampleValidatorTests
     [Fact]
     public async Task ShouldBeInvalid_WhenNameIsEmpty()
     {
-        var request = SampleBuilder.BuildRequest() with { Name = string.Empty };
+        CreateSampleRequest request = SampleBuilder.BuildRequest() with { Name = string.Empty };
 
-        var result = await _sut.ValidateAsync(request);
+        ValidationResult result = await _sut.ValidateAsync(request);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(request.Name));
+        result.Errors.Should().Contain(e =>
+            e.PropertyName == nameof(request.Name) &&
+            e.ErrorMessage == ValidationMessageResource.NAME_REQUIRED);
     }
 
     [Fact]
     public async Task ShouldBeInvalid_WhenDescriptionIsEmpty()
     {
-        var request = SampleBuilder.BuildRequest() with { Description = string.Empty };
+        CreateSampleRequest request = SampleBuilder.BuildRequest() with { Description = string.Empty };
 
-        var result = await _sut.ValidateAsync(request);
+        ValidationResult result = await _sut.ValidateAsync(request);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(request.Description));
+        result.Errors.Should().Contain(e =>
+            e.PropertyName == nameof(request.Description) &&
+            e.ErrorMessage == ValidationMessageResource.DESCRIPTION_REQUIRED);
     }
 
     [Fact]
     public async Task ShouldBeInvalid_WhenNameExceedsMaxLength()
     {
-        var request = SampleBuilder.BuildRequest() with { Name = new string('x', 101) };
+        CreateSampleRequest request = SampleBuilder.BuildRequest() with
+        {
+            Name = new string('x', ValidationConstants.SampleRules.NameMaxLength + 1)
+        };
 
-        var result = await _sut.ValidateAsync(request);
+        ValidationResult result = await _sut.ValidateAsync(request);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(request.Name));
+        result.Errors.Should().Contain(e =>
+            e.PropertyName == nameof(request.Name) &&
+            e.ErrorMessage == ValidationMessageResource.NAME_MAX_LENGTH
+                .Replace("{MaxLength}", ValidationConstants.SampleRules.NameMaxLength.ToString()));
+    }
+
+    [Fact]
+    public async Task ShouldBeInvalid_WhenDescriptionExceedsMaxLength()
+    {
+        CreateSampleRequest request = SampleBuilder.BuildRequest() with
+        {
+            Description = new string('x', ValidationConstants.SampleRules.DescriptionMaxLength + 1)
+        };
+
+        ValidationResult result = await _sut.ValidateAsync(request);
+
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e =>
+            e.PropertyName == nameof(request.Description) &&
+            e.ErrorMessage == ValidationMessageResource.DESCRIPTION_MAX_LENGTH
+                .Replace("{MaxLength}", ValidationConstants.SampleRules.DescriptionMaxLength.ToString()));
     }
 }

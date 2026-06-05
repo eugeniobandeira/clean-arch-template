@@ -1,55 +1,74 @@
-using System.Net;
-using System.Net.Http.Json;
-using CleanArch.Application.Features.Samples.DTOs;
+using CleanArch.Application.Common.Response;
+using CleanArch.Application.Features.Samples;
+using CleanArch.Application.Features.Samples.Handlers.Create.Request;
 using CleanArch.Tests.Common.Builders;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace CleanArch.Tests.Integration.Api.Samples;
 
-public sealed class SampleEndpointTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public sealed class SampleEndpointTests(CustomWebApplicationFactory factory)
+    : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
     public async Task GET_samples_ShouldReturn200()
     {
-        var response = await _client.GetAsync("/api/samples");
+        HttpResponseMessage response = await _client.GetAsync("/api/v1/samples");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        ApiListResponse<SampleResponse>? body = await response.Content.ReadFromJsonAsync<ApiListResponse<SampleResponse>>();
+        body.Should().NotBeNull();
+        body!.Data.Should().NotBeNull();
     }
 
     [Fact]
     public async Task POST_samples_ShouldReturn201_WhenValid()
     {
-        var request = SampleBuilder.BuildRequest();
+        CreateSampleRequest request = SampleBuilder.BuildRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/samples", request);
+        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/v1/samples", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created = await response.Content.ReadFromJsonAsync<SampleResponse>();
+        SampleResponse? created = await response.Content.ReadFromJsonAsync<SampleResponse>();
         created.Should().NotBeNull();
         created!.Name.Should().Be(request.Name);
     }
 
     [Fact]
-    public async Task POST_samples_ShouldReturn400_WhenInvalid()
+    public async Task POST_samples_ShouldReturn422_WhenInvalid()
     {
-        var request = SampleBuilder.BuildInvalidRequest();
+        CreateSampleRequest request = SampleBuilder.BuildInvalidRequest();
 
-        var response = await _client.PostAsJsonAsync("/api/samples", request);
+        HttpResponseMessage response = await _client.PostAsJsonAsync("/api/v1/samples", request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
     }
 
     [Fact]
     public async Task GET_samples_ById_ShouldReturn404_WhenNotFound()
     {
-        var response = await _client.GetAsync($"/api/samples/{Guid.NewGuid()}");
+        HttpResponseMessage response = await _client.GetAsync($"/api/v1/samples/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GET_samples_ById_ShouldReturn200_WhenFound()
+    {
+        CreateSampleRequest request = SampleBuilder.BuildRequest();
+        HttpResponseMessage createResponse = await _client.PostAsJsonAsync("/api/v1/samples", request);
+        SampleResponse? created = await createResponse.Content.ReadFromJsonAsync<SampleResponse>();
+
+        HttpResponseMessage response = await _client.GetAsync($"/api/v1/samples/{created!.Id}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        SampleResponse? fetched = await response.Content.ReadFromJsonAsync<SampleResponse>();
+        fetched!.Id.Should().Be(created.Id);
     }
 }
