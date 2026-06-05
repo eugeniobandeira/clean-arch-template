@@ -5,6 +5,9 @@
     <IsAspireHost>true</IsAspireHost>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\01 - aspire\02 - ServiceDefaults\CleanArch.ServiceDefaults\CleanArch.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\..\02 - src\01 - Api\CleanArch.Api\CleanArch.Api.csproj" />
   </ItemGroup>

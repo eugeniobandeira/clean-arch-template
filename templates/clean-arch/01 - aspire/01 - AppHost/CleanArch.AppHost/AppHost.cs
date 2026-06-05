@@ -1,5 +1,9 @@
+using CleanArch.AppHost;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-var api = builder.AddProject<Projects.CleanArch_Api>("cleanarch-api");
+builder.AddProject<Projects.CleanArch_Api>("clean-arch-api")
+    .WithHttpHealthCheck("/health")
+    .WithScalar();
 
-builder.Build().Run();
+await builder.Build().RunAsync();
