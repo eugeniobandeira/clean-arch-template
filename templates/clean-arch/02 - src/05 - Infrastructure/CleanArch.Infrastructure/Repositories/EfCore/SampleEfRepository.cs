@@ -1,42 +1,56 @@
+using CleanArch.Domain.Common;
 using CleanArch.Domain.Entities;
-using CleanArch.Domain.Repositories;
+using CleanArch.Domain.Filters;
+using CleanArch.Domain.Interfaces.Common;
 using CleanArch.Infrastructure.Persistence.EfCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanArch.Infrastructure.Repositories.EfCore;
 
-public sealed class SampleEfRepository(AppDbContext dbContext) : ISampleRepository
+public sealed class SampleEfRepository(AppDbContext dbContext) :
+    IAddRepository<SampleEntity>,
+    IGetByIdRepository<SampleEntity>,
+    IUpdateRepository<SampleEntity>,
+    IGetAllRepository<SampleEntity, SampleFilter>,
+    IDeleteRepository<SampleEntity>
 {
-    public async Task<Sample?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
-        await dbContext.Samples
+    public async Task AddAsync(SampleEntity entity, CancellationToken cancellationToken = default)
+        => await dbContext.Samples.AddAsync(entity, cancellationToken);
+
+    public async Task<SampleEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await dbContext.Samples
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-    public async Task<IEnumerable<Sample>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await dbContext.Samples
-            .AsNoTracking()
-            .Where(x => x.IsActive)
+    public async Task<PagedResult<SampleEntity>> GetAllAsync(SampleFilter? filter = null, CancellationToken cancellationToken = default)
+    {
+        IQueryable<SampleEntity> query = dbContext.Samples.AsNoTracking();
+
+        if (filter?.IsActive.HasValue is true)
+            query = query.Where(x => x.IsActive == filter.IsActive.Value);
+
+        int total = await query.CountAsync(cancellationToken);
+
+        int page = filter?.Page ?? 1;
+        int pageSize = filter?.PageSize ?? 10;
+
+        List<SampleEntity> items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-    public async Task AddAsync(Sample sample, CancellationToken cancellationToken = default)
-    {
-        await dbContext.Samples.AddAsync(sample, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return new PagedResult<SampleEntity>(items, total);
     }
 
-    public async Task UpdateAsync(Sample sample, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(SampleEntity entity, CancellationToken cancellationToken = default)
     {
-        dbContext.Samples.Update(sample);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        dbContext.Samples.Update(entity);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(SampleEntity entity, CancellationToken cancellationToken = default)
     {
-        var sample = await dbContext.Samples.FindAsync([id], cancellationToken);
-        if (sample is not null)
-        {
-            dbContext.Samples.Remove(sample);
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
+        dbContext.Samples.Remove(entity);
+        return Task.CompletedTask;
     }
 }

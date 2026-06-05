@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CleanArch.Infrastructure.Persistence.EfCore.Configurations;
 
-public sealed class SampleConfiguration : IEntityTypeConfiguration<Sample>
+public sealed class SampleConfiguration : IEntityTypeConfiguration<SampleEntity>
 {
-    public void Configure(EntityTypeBuilder<Sample> builder)
+    public void Configure(EntityTypeBuilder<SampleEntity> builder)
     {
         builder.HasKey(x => x.Id);
 
