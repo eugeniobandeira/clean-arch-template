@@ -1,12 +1,15 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 namespace CleanArch.Api.Extensions;
 
-public static class SwaggerExtensions
+public static class OpenApiExtensions
 {
-    public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services)
+    public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services, IConfiguration configuration)
     {
+        string contactName = configuration["OpenApi:ContactName"]!;
+        string contactUrl = configuration["OpenApi:ContactUrl"]!;
+
         services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer((document, context, _) =>
@@ -18,12 +21,13 @@ public static class SwaggerExtensions
                     Description = "API gerada com Clean Architecture + Vertical Slice Template",
                     Contact = new OpenApiContact
                     {
-                        Name = "eugeniobandeira",
-                        Url = new Uri("https://github.com/eugeniobandeira")
+                        Name = contactName,
+                        Url = new Uri(contactUrl)
                     }
                 };
 
                 document.Components ??= new OpenApiComponents();
+                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
                 document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
@@ -46,6 +50,8 @@ public static class SwaggerExtensions
         {
             options.Title = "CleanArch API";
             options.Theme = ScalarTheme.DeepSpace;
+            options.TagSorter = TagSorter.Alpha;
+            options.OperationSorter = OperationSorter.Alpha;
         });
 
         return app;

@@ -1,16 +1,18 @@
-using CleanArch.Api.Endpoints.Samples;
 using CleanArch.Api.Extensions;
 using CleanArch.Api.Middlewares;
 using CleanArch.IoC;
+using CleanArch.ServiceDefaults;
 using Serilog;
+using System.Globalization;
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .CreateBootstrapLogger();
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
     builder.AddServiceDefaults();
 
@@ -22,18 +24,24 @@ try
         .Enrich.WithEnvironmentName()
         .Enrich.WithThreadId()
         .WriteTo.Console(
+            formatProvider: CultureInfo.InvariantCulture,
             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}"));
 
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddJwtAuthentication(builder.Configuration);
-    builder.Services.AddOpenApiDocumentation();
+    builder.Services.AddOpenApiDocumentation(builder.Configuration);
     builder.Services.AddHttpContextAccessor();
+    builder.Services.AddCorsPolicy(builder.Configuration);
+    builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
 
-    var app = builder.Build();
+    WebApplication app = builder.Build();
 
     app.MapDefaultEndpoints();
 
+    app.UseExceptionHandler();
     app.UseCorrelationId();
     app.UseSerilogRequestLogging(options =>
     {
@@ -41,7 +49,6 @@ try
         {
             diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
             diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-            diagnosticContext.Set("CorrelationId", httpContext.Items["CorrelationId"]);
         };
     });
 
@@ -49,10 +56,11 @@ try
         app.UseOpenApiDocumentation();
 
     app.UseHttpsRedirection();
+    app.UseCorsPolicy();
     app.UseAuthentication();
     app.UseAuthorization();
 
-    app.MapSampleEndpoints();
+    app.MapEndpoints();
 
     await app.RunAsync();
 }
@@ -62,5 +70,5 @@ catch (Exception ex) when (ex is not HostAbortedException)
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }
