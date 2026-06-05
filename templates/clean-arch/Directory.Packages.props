@@ -3,8 +3,13 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="Application">
+    <PackageVersion Include="ErrorOr" Version="2.0.1" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup Label="Analyzers">
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.8.0.113526" />
   </ItemGroup>
   <ItemGroup Label="Infrastructure - EF Core">
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
@@ -30,6 +35,7 @@
     <PackageVersion Include="Serilog.Enrichers.Process" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup Label="Aspire">
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.6.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.6.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
