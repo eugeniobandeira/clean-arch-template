@@ -1,6 +1,6 @@
 namespace CleanArch.Domain.Entities;
 
-public sealed class SampleEntity
+public sealed class ExampleEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string Name { get; private set; } = string.Empty;
@@ -9,14 +9,14 @@ public sealed class SampleEntity
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; private set; }
 
-    private SampleEntity() { }
+    private ExampleEntity() { }
 
-    public static SampleEntity Create(string name, string description)
+    public static ExampleEntity Create(string name, string description)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
 
-        return new SampleEntity
+        return new ExampleEntity
         {
             Name = name,
             Description = description

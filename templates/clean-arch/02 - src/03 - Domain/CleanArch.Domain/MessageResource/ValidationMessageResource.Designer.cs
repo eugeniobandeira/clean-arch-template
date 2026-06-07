@@ -97,7 +97,7 @@ namespace CleanArch.Domain.MessageResource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sample not found..
+        ///   Looks up a localized string similar to Example not found..
         /// </summary>
         public static string SAMPLE_NOT_FOUND {
             get {
