@@ -12,7 +12,9 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+#pragma warning disable S1135
             // TODO: Replace infrastructure registrations with fakes/in-memory implementations.
+#pragma warning restore S1135
         });
     }
 }
