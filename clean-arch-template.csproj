@@ -5,7 +5,7 @@
     <PackageId>EugenioBandeira.CleanArchTemplate</PackageId>
     <Title>Clean Architecture Template</Title>
     <Authors>eugeniobandeira</Authors>
-    <Description>Template Clean Architecture + Vertical Slice com Repository Pattern, EF Core, DynamoDB, JWT, CorrelationId e Serilog para .NET 10.</Description>
+    <Description>.NET 10 template with Clean Architecture + Vertical Slice, Repository Pattern, feature handlers, JWT, CorrelationId, Serilog, and .NET Aspire.</Description>
     <PackageTags>dotnet;template;cleanarchitecture;verticalslice;csharp;api;ddd</PackageTags>
     <TargetFramework>net10.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
@@ -17,7 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Copyright>Copyright © 2025 eugeniobandeira</Copyright>
+    <Copyright>Copyright © 2026 eugeniobandeira</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

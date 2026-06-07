@@ -6,7 +6,7 @@
   "classifications": [ "Web", "API", "Clean Architecture", "DDD", "Vertical Slice" ],
   "identity": "EugenioBandeira.CleanArchTemplate",
   "name": "Clean Architecture + Vertical Slice Template",
-  "description": "Template com Clean Architecture, Vertical Slice, Repository Pattern, EF Core, DynamoDB, JWT e CorrelationId para .NET 10.",
+  "description": ".NET 10 template with Clean Architecture, Vertical Slice, Repository Pattern, feature handlers, JWT, CorrelationId, Serilog, and .NET Aspire.",
   "shortName": "clean-arch",
   "language": "C#",
   "tags": {
@@ -20,13 +20,13 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
-      "description": "Incluir persistência com EF Core"
+      "description": "Include EF Core persistence"
     },
     "useDynamoDB": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Incluir persistência com DynamoDB (AWS)"
+      "description": "Include DynamoDB (AWS) persistence"
     }
   }
 }
