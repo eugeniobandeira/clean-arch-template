@@ -1,6 +1,6 @@
+using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
 using CleanArch.Domain.Common;
 using CleanArch.Domain.Entities;
-using CleanArch.Domain.Filters;
 using CleanArch.Domain.Interfaces.Common;
 
 namespace CleanArch.Infrastructure.Repositories;
@@ -10,7 +10,7 @@ public sealed class ExampleRepository :
     IGetByIdRepository<ExampleEntity>,
     IUpdateRepository<ExampleEntity>,
     IDeleteRepository<ExampleEntity>,
-    IGetAllRepository<ExampleEntity, ExampleFilter>
+    IGetAllRepository<ExampleEntity, GetAllExampleRequest>
 {
     public Task AddAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
     {
@@ -32,7 +32,7 @@ public sealed class ExampleRepository :
         throw new NotImplementedException();
     }
 
-    public Task<PagedResult<ExampleEntity>> GetAllAsync(ExampleFilter? filter = null, CancellationToken cancellationToken = default)
+    public Task<PagedResult<ExampleEntity>> GetAllAsync(GetAllExampleRequest filter, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <ProjectReference Include="..\..\02 - Application\CleanArch.Application\CleanArch.Application.csproj" />
     <ProjectReference Include="..\..\03 - Domain\CleanArch.Domain\CleanArch.Domain.csproj" />
   </ItemGroup>
 </Project>
