@@ -1,6 +1,6 @@
 # EugenioBandeira.CleanArchTemplate
 
-.NET 10 template with Clean Architecture + Vertical Slice, Repository Pattern, feature handlers, JWT, CorrelationId, Serilog, and .NET Aspire.
+.NET 10 template with Clean Architecture + Vertical Slice, Repository Pattern, feature handlers, CorrelationId, Serilog, and .NET Aspire.
 
 ## Installation
 
@@ -12,18 +12,6 @@ dotnet new install EugenioBandeira.CleanArchTemplate
 
 ```bash
 dotnet new clean-arch -n MyApp
-```
-
-### Optional parameters
-
-| Parameter | Default | Description |
-|---|---|---|
-| `--useEfCore` | `true` | Prepares the project for EF Core persistence |
-| `--useDynamoDB` | `false` | Prepares the project for DynamoDB (AWS) persistence |
-
-```bash
-# Example with DynamoDB
-dotnet new clean-arch -n MyApp --useDynamoDB true
 ```
 
 ## Generated structure
@@ -41,41 +29,82 @@ MyApp/
 │   ├── 02 - Application/
 │   │   └── MyApp.Application/          # Handlers, validators, DTOs per feature (Vertical Slice)
 │   ├── 03 - Domain/
-│   │   └── MyApp.Domain/               # Entities, repository interfaces, filters, constants
+│   │   └── MyApp.Domain/               # Entities, repository interfaces, constants
 │   ├── 04 - IoC/
 │   │   └── MyApp.IoC/                  # Dependency injection setup
 │   └── 05 - Infrastructure/
 │       └── MyApp.Infrastructure/       # Repository implementations
-└── 03 - tests/
-    ├── 01 - Common/
-    │   └── MyApp.Tests.Common/         # Test builders with Bogus
-    ├── 02 - Validators/
-    │   └── MyApp.Tests.Validators/     # FluentValidation tests
-    ├── 03 - Handlers/
-    │   └── MyApp.Tests.Handlers/       # Handler unit tests
-    ├── 04 - Repositories/
-    │   └── MyApp.Tests.Repositories/   # Repository tests
-    └── 05 - Integration/
-        └── MyApp.Tests.Integration/    # Integration tests via WebApplicationFactory
+├── 03 - tests/
+│   ├── 01 - Common/
+│   │   └── MyApp.Tests.Common/         # Test builders with Bogus
+│   ├── 02 - Validators/
+│   │   └── MyApp.Tests.Validators/     # FluentValidation tests
+│   ├── 03 - Handlers/
+│   │   └── MyApp.Tests.Handlers/       # Handler unit tests
+│   ├── 04 - Repositories/
+│   │   └── MyApp.Tests.Repositories/   # Repository tests
+│   └── 05 - Integration/
+│       └── MyApp.Tests.Integration/    # Integration tests via WebApplicationFactory
+├── docs/                               # Architecture docs, ADRs, feature plans
+├── iac/                                # Infrastructure as Code (Terraform, Bicep, etc.)
+└── k8s/                                # Kubernetes manifests (Kustomize)
+    ├── base/
+    └── overlays/
+        ├── dev/
+        └── prod/
 ```
 
 ## Architecture
 
-The template uses **Vertical Slice** with **Clean Architecture**. Each feature is self-contained within the Application layer:
+The template uses **Vertical Slice** with **Clean Architecture**. Each feature is self-contained within the Application layer.
+
+### Handler pattern
+
+All handlers implement the generic `IHandler<TRequest, TResponse>` interface:
+
+```csharp
+public interface IHandler<TRequest, TResponse>
+{
+    Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken cancellationToken = default);
+}
+```
+
+Each feature slice follows this structure:
 
 ```
 Application/Features/Example/
 ├── ExampleResponse.cs
-├── Mapper/ExampleMapper.cs
+├── Mapper/
+│   └── ExampleMapper.cs
 └── Handlers/
-    ├── Create/  → ICreateExampleHandler, CreateExampleHandler, CreateExampleRequest, CreateExampleValidator
-    ├── GetById/ → IGetByIdExampleHandler, GetByIdExampleHandler
-    ├── GetAll/  → IGetAllExampleHandler, GetAllExampleHandler
-    ├── Update/  → IUpdateExampleHandler, UpdateExampleHandler, UpdateExampleRequest, UpdateExampleValidator
-    └── Delete/  → IDeleteExampleHandler, DeleteExampleHandler
+    ├── Create/
+    │   ├── CreateExampleHandler.cs        # IHandler<CreateExampleRequest, ExampleEntity>
+    │   ├── Request/CreateExampleRequest.cs
+    │   └── Validator/CreateExampleValidator.cs
+    ├── GetById/
+    │   └── GetByIdExampleHandler.cs       # IHandler<Guid, ExampleEntity>
+    ├── GetAll/
+    │   ├── GetAllExampleHandler.cs        # IHandler<GetAllExampleRequest, PagedResult<ExampleEntity>>
+    │   └── Request/GetAllExampleRequest.cs
+    ├── Update/
+    │   ├── UpdateExampleHandler.cs        # IHandler<UpdateCommand<UpdateExampleRequest>, ExampleEntity>
+    │   ├── Request/UpdateExampleRequest.cs
+    │   └── Validator/UpdateExampleValidator.cs
+    └── Delete/
+        └── DeleteExampleHandler.cs        # IHandler<Guid, Deleted>
 ```
 
-Endpoints (Api layer) are registered automatically via reflection — each file implements `IEndpoint`:
+### Update command
+
+Updates use the generic `UpdateCommand<T>` from `Common/Commands`:
+
+```csharp
+public sealed record UpdateCommand<T>(Guid Id, T Dto);
+```
+
+### Endpoints
+
+Endpoints are registered automatically via reflection — each file implements `IEndpoint`:
 
 ```csharp
 internal sealed class Create : IEndpoint
@@ -91,13 +120,13 @@ internal sealed class Create : IEndpoint
 
 ## Implementing the repository
 
-The template generates `ExampleRepository.cs` with stubs for all repository interfaces. Implement it using the persistence technology of your choice (EF Core, Dapper, DynamoDB, etc.):
+The template generates `ExampleRepository.cs` with stubs for all repository interfaces. Implement it using the persistence technology of your choice (EF Core, Dapper, etc.):
 
 ```csharp
 public sealed class ExampleRepository :
     IAddRepository<ExampleEntity>,
     IGetByIdRepository<ExampleEntity>,
-    IGetAllRepository<ExampleEntity, ExampleFilter>,
+    IGetAllRepository<ExampleEntity, GetAllExampleRequest>,
     IUpdateRepository<ExampleEntity>,
     IDeleteRepository<ExampleEntity>
 {
@@ -111,7 +140,7 @@ Then register it in `InfrastructureDependencyInjection.cs`:
 services.AddScoped<ExampleRepository>();
 services.AddScoped<IAddRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
 services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-services.AddScoped<IGetAllRepository<ExampleEntity, ExampleFilter>>(sp => sp.GetRequiredService<ExampleRepository>());
+services.AddScoped<IGetAllRepository<ExampleEntity, GetAllExampleRequest>>(sp => sp.GetRequiredService<ExampleRepository>());
 services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
 services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
 ```
@@ -139,24 +168,7 @@ Every request is tracked by a correlation ID that flows through logs, responses,
 }
 ```
 
-**Reading the correlation ID inside a handler:**
-
-Inject `IHttpContextAccessor` and read from `HttpContext.Items`:
-
-```csharp
-public sealed class MyHandler(IHttpContextAccessor httpContextAccessor) : IMyHandler
-{
-    public Task Handle(...)
-    {
-        string? correlationId = httpContextAccessor.HttpContext?
-            .Items[CorrelationIdConstants.Key]?.ToString();
-    }
-}
-```
-
 **Propagating to downstream services:**
-
-Forward the header when calling external APIs:
 
 ```csharp
 httpClient.DefaultRequestHeaders.Add("X-Correlation-Id", correlationId);
@@ -164,14 +176,13 @@ httpClient.DefaultRequestHeaders.Add("X-Correlation-Id", correlationId);
 
 ## Shipping logs and telemetry
 
-The template supports two complementary approaches. Use one or both depending on your platform.
+The template supports two complementary approaches.
 
 ### Option 1 — Serilog sink (logs only)
 
 Install the sink for your platform and add it to the `Serilog` configuration in `appsettings.json`:
 
 ```bash
-# Examples
 dotnet add package Serilog.Sinks.Datadog.Logs   # Datadog
 dotnet add package Serilog.Sinks.Elasticsearch  # Elastic
 dotnet add package Serilog.Sinks.Seq            # Seq
@@ -224,9 +235,9 @@ For full observability (logs, traces, and metrics) with any platform, **OTLP is 
 | Layer | Technologies |
 |---|---|
 | API | ASP.NET Core Minimal APIs, JWT Bearer, Scalar (OpenAPI), Serilog |
-| Application | FluentValidation, ErrorOr |
+| Application | FluentValidation, ErrorOr, generic `IHandler<TRequest, TResponse>` |
 | Domain | Repository interfaces segregated by operation |
-| Infrastructure | Repository stub ready for EF Core or DynamoDB |
+| Infrastructure | Repository stub, persistence-agnostic |
 | Observability | .NET Aspire, OpenTelemetry, CorrelationId |
 | Tests | xUnit, Moq, FluentAssertions, Bogus, WebApplicationFactory |
 

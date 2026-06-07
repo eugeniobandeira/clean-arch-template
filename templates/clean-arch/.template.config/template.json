@@ -15,18 +15,15 @@
   },
   "sourceName": "CleanArch",
   "preferNameDirectory": true,
-  "symbols": {
-    "useEfCore": {
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "true",
-      "description": "Include EF Core persistence"
-    },
-    "useDynamoDB": {
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "false",
-      "description": "Include DynamoDB (AWS) persistence"
+  "sources": [
+    {
+      "exclude": [
+        ".claude/**",
+        ".vs/**",
+        "**/bin/**",
+        "**/obj/**"
+      ]
     }
-  }
+  ],
+  "symbols": {}
 }
