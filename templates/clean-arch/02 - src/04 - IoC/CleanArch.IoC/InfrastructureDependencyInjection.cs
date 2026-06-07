@@ -1,5 +1,4 @@
 using CleanArch.Domain.Entities;
-using CleanArch.Domain.Filters;
 using CleanArch.Domain.Interfaces.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +16,7 @@ internal static class InfrastructureDependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+#pragma warning disable S1135, S125
         // TODO: Register your repository implementation here.
         //
         // Each interface maps to a single operation — register them all pointing
@@ -26,8 +26,9 @@ internal static class InfrastructureDependencyInjection
         //   services.AddScoped<IAddRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
         //   services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
         //   services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-        //   services.AddScoped<IGetAllRepository<ExampleEntity, ExampleFilter>>(sp => sp.GetRequiredService<ExampleRepository>());
+        //   services.AddScoped<IGetAllRepository<ExampleEntity, GetAllExampleRequest>>(sp => sp.GetRequiredService<ExampleRepository>());
         //   services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
+#pragma warning restore S1135, S125
 
         return services;
     }
