@@ -1,3 +1,4 @@
+using CleanArch.Application.Common.Commands;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
 using CleanArch.Domain.Constants;
 using CleanArch.Domain.Entities;
@@ -7,7 +8,7 @@ using FluentValidation;
 
 namespace CleanArch.Application.Features.Examples.Handlers.Update.Validator;
 
-public sealed class UpdateExampleValidator : AbstractValidator<UpdateExampleCommand>
+public sealed class UpdateExampleValidator : AbstractValidator<UpdateCommand<UpdateExampleRequest>>
 {
     public UpdateExampleValidator(IGetByIdRepository<ExampleEntity> repository)
     {
@@ -16,7 +17,7 @@ public sealed class UpdateExampleValidator : AbstractValidator<UpdateExampleComm
         RuleFor(x => x.Id)
             .MustAsync(async (id, ct) => await repository.GetByIdAsync(id, ct) is not null)
             .WithErrorCode(ExampleErrorCodes.NotFound)
-            .WithMessage(ValidationMessageResource.SAMPLE_NOT_FOUND);
+            .WithMessage(ValidationMessageResource.EXAMPLE_NOT_FOUND);
 
         RuleFor(x => x.Dto.Name)
             .NotEmpty()

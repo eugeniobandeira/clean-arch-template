@@ -1,3 +1,4 @@
+using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Extensions;
 using CleanArch.Application.Features.Examples.Handlers.Create.Request;
 using CleanArch.Application.Features.Examples.Mapper;
@@ -12,13 +13,13 @@ namespace CleanArch.Application.Features.Examples.Handlers.Create;
 public sealed class CreateExampleHandler(
     IAddRepository<ExampleEntity> repository,
     IValidator<CreateExampleRequest> validator,
-    ILogger<CreateExampleHandler> logger) : ICreateExampleHandler
+    ILogger<CreateExampleHandler> logger) : IHandler<CreateExampleRequest, ExampleEntity>
 {
     public async Task<ErrorOr<ExampleEntity>> Handle(
         CreateExampleRequest request,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Creating example. Payload: {@Payload}", request);
+        logger.LogInformation("Creating example. Payload={@Payload}", request);
 
         List<Error>? errors = await validator.ValidateToErrorsAsync(request, cancellationToken);
         if (errors is not null)
@@ -28,7 +29,7 @@ public sealed class CreateExampleHandler(
 
         await repository.AddAsync(entity, cancellationToken);
 
-        logger.LogInformation("Example created. Response: {@Response}", entity);
+        logger.LogInformation("Example created successfully. Response={@Response}", entity);
 
         return entity;
     }
