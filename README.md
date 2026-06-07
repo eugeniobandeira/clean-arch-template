@@ -303,6 +303,21 @@ For full observability (logs, traces, and metrics) with any platform, **OTLP is 
 | Observability | .NET Aspire, OpenTelemetry, CorrelationId |
 | Tests | xUnit, Moq, FluentAssertions, Bogus, WebApplicationFactory |
 
+## Contributing
+
+1. Fork the repository and create a branch from `master`:
+   ```bash
+   git checkout -b feat/your-feature
+   ```
+2. Make your changes inside `templates/clean-arch/`
+3. Verify the template builds cleanly:
+   ```bash
+   dotnet build templates/clean-arch/CleanArch.slnx -c Release
+   ```
+4. Commit using [Conventional Commits](https://www.conventionalcommits.org/) and open a PR targeting `master`
+5. CI runs automatically on every push and PR — the build must pass before merging
+6. Once merged, bump `PackageVersion` in `clean-arch-template.csproj` to trigger the publish pipeline
+
 ## License
 
 MIT © eugeniobandeira
