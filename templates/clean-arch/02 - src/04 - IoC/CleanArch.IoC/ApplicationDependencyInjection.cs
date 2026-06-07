@@ -1,8 +1,8 @@
-using CleanArch.Application.Features.Samples.Handlers.Create;
-using CleanArch.Application.Features.Samples.Handlers.Delete;
-using CleanArch.Application.Features.Samples.Handlers.GetAll;
-using CleanArch.Application.Features.Samples.Handlers.GetById;
-using CleanArch.Application.Features.Samples.Handlers.Update;
+using CleanArch.Application.Features.Examples.Handlers.Create;
+using CleanArch.Application.Features.Examples.Handlers.Delete;
+using CleanArch.Application.Features.Examples.Handlers.GetAll;
+using CleanArch.Application.Features.Examples.Handlers.GetById;
+using CleanArch.Application.Features.Examples.Handlers.Update;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -13,14 +13,14 @@ internal static class ApplicationDependencyInjection
 {
     internal static IServiceCollection Register(IServiceCollection services)
     {
-        Assembly assembly = typeof(CreateSampleHandler).Assembly;
+        Assembly assembly = typeof(CreateExampleHandler).Assembly;
         services.AddValidatorsFromAssembly(assembly);
 
-        services.AddScoped<ICreateSampleHandler, CreateSampleHandler>();
-        services.AddScoped<IGetByIdSampleHandler, GetByIdSampleHandler>();
-        services.AddScoped<IGetAllSampleHandler, GetAllSampleHandler>();
-        services.AddScoped<IUpdateSampleHandler, UpdateSampleHandler>();
-        services.AddScoped<IDeleteSampleHandler, DeleteSampleHandler>();
+        services.AddScoped<ICreateExampleHandler, CreateExampleHandler>();
+        services.AddScoped<IGetByIdExampleHandler, GetByIdExampleHandler>();
+        services.AddScoped<IGetAllExampleHandler, GetAllExampleHandler>();
+        services.AddScoped<IUpdateExampleHandler, UpdateExampleHandler>();
+        services.AddScoped<IDeleteExampleHandler, DeleteExampleHandler>();
 
         return services;
     }
