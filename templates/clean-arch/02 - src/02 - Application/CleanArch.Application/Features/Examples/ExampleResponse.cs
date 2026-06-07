@@ -1,6 +1,6 @@
-namespace CleanArch.Application.Features.Samples.Mapper;
+namespace CleanArch.Application.Features.Examples;
 
-public sealed record SampleResponse(
+public sealed record ExampleResponse(
     Guid Id,
     string Name,
     string Description,

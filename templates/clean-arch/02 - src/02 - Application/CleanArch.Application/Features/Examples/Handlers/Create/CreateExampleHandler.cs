@@ -1,0 +1,35 @@
+using CleanArch.Application.Extensions;
+using CleanArch.Application.Features.Examples.Handlers.Create.Request;
+using CleanArch.Application.Features.Examples.Mapper;
+using CleanArch.Domain.Entities;
+using CleanArch.Domain.Interfaces.Common;
+using ErrorOr;
+using FluentValidation;
+using Microsoft.Extensions.Logging;
+
+namespace CleanArch.Application.Features.Examples.Handlers.Create;
+
+public sealed class CreateExampleHandler(
+    IAddRepository<ExampleEntity> repository,
+    IValidator<CreateExampleRequest> validator,
+    ILogger<CreateExampleHandler> logger) : ICreateExampleHandler
+{
+    public async Task<ErrorOr<ExampleEntity>> Handle(
+        CreateExampleRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Creating example. Payload: {@Payload}", request);
+
+        List<Error>? errors = await validator.ValidateToErrorsAsync(request, cancellationToken);
+        if (errors is not null)
+            return errors;
+
+        ExampleEntity entity = ExampleMapper.CreateExample(request);
+
+        await repository.AddAsync(entity, cancellationToken);
+
+        logger.LogInformation("Example created. Response: {@Response}", entity);
+
+        return entity;
+    }
+}
