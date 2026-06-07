@@ -1,6 +1,15 @@
 # EugenioBandeira.CleanArchTemplate
 
-.NET 10 template with Clean Architecture + Vertical Slice, Repository Pattern, feature handlers, CorrelationId, Serilog, and .NET Aspire.
+.NET 10 template with Clean Architecture + Vertical Slice, Repository Pattern, feature handlers, JWT, CorrelationId, Serilog, and .NET Aspire.
+
+## Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- .NET Aspire workload:
+
+```bash
+dotnet workload install aspire
+```
 
 ## Installation
 
@@ -53,6 +62,93 @@ MyApp/
         ├── dev/
         └── prod/
 ```
+
+## Post-generation setup
+
+1. Update connection strings in `appsettings.json`
+2. Replace `Jwt:SecretKey` with a secure key
+3. Implement `ExampleRepository.cs` with your chosen persistence technology
+4. Register the repository in `InfrastructureDependencyInjection.cs`
+5. Register new handler types in `ApplicationDependencyInjection.cs` as you add features
+
+> The `Example*` files throughout the project are working stubs that demonstrate the patterns. Use them as a reference, then replace them with your own features.
+
+## Adding a new feature
+
+The workflow for adding a feature (e.g. `Product`) mirrors the existing `Example` slice:
+
+**1. Domain** — add entity and error codes:
+```
+Domain/Entities/ProductEntity.cs
+Domain/Constants/ProductErrorCodes.cs
+```
+
+**2. Application** — add handlers, requests, validators:
+```
+Application/Features/Products/
+├── ProductResponse.cs
+├── Mapper/ProductMapper.cs
+└── Handlers/
+    ├── Create/
+    │   ├── CreateProductHandler.cs
+    │   ├── Request/CreateProductRequest.cs
+    │   └── Validator/CreateProductValidator.cs
+    ├── GetById/GetByIdProductHandler.cs
+    ├── GetAll/
+    │   ├── GetAllProductHandler.cs
+    │   └── Request/GetAllProductRequest.cs
+    ├── Update/
+    │   ├── UpdateProductHandler.cs
+    │   ├── Request/UpdateProductRequest.cs
+    │   └── Validator/UpdateProductValidator.cs
+    └── Delete/DeleteProductHandler.cs
+```
+
+**3. Infrastructure** — implement the repository:
+```csharp
+public sealed class ProductRepository :
+    IAddRepository<ProductEntity>,
+    IGetByIdRepository<ProductEntity>,
+    IGetAllRepository<ProductEntity, GetAllProductRequest>,
+    IUpdateRepository<ProductEntity>,
+    IDeleteRepository<ProductEntity>
+{
+    // Implement using EF Core, Dapper, DynamoDB, etc.
+}
+```
+
+**4. IoC** — register handlers and repository:
+
+In `ApplicationDependencyInjection.cs`:
+```csharp
+services.AddScoped<IHandler<CreateProductRequest, ProductEntity>, CreateProductHandler>();
+services.AddScoped<IHandler<Guid, ProductEntity>, GetByIdProductHandler>();
+services.AddScoped<IHandler<GetAllProductRequest, PagedResult<ProductEntity>>, GetAllProductHandler>();
+services.AddScoped<IHandler<UpdateCommand<UpdateProductRequest>, ProductEntity>, UpdateProductHandler>();
+services.AddScoped<IHandler<Guid, Deleted>, DeleteProductHandler>();
+```
+
+In `InfrastructureDependencyInjection.cs`:
+```csharp
+services.AddScoped<ProductRepository>();
+services.AddScoped<IAddRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
+services.AddScoped<IGetByIdRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
+services.AddScoped<IGetAllRepository<ProductEntity, GetAllProductRequest>>(sp => sp.GetRequiredService<ProductRepository>());
+services.AddScoped<IUpdateRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
+services.AddScoped<IDeleteRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
+```
+
+**5. Api** — add one file per endpoint:
+```
+Api/Endpoints/Products/
+├── Create.cs
+├── GetById.cs
+├── GetAll.cs
+├── Update.cs
+└── Delete.cs
+```
+
+Endpoints are registered automatically via reflection — no manual wiring needed.
 
 ## Architecture
 
@@ -116,33 +212,6 @@ internal sealed class Create : IEndpoint
            .RequireAuthorization();
     }
 }
-```
-
-## Implementing the repository
-
-The template generates `ExampleRepository.cs` with stubs for all repository interfaces. Implement it using the persistence technology of your choice (EF Core, Dapper, etc.):
-
-```csharp
-public sealed class ExampleRepository :
-    IAddRepository<ExampleEntity>,
-    IGetByIdRepository<ExampleEntity>,
-    IGetAllRepository<ExampleEntity, GetAllExampleRequest>,
-    IUpdateRepository<ExampleEntity>,
-    IDeleteRepository<ExampleEntity>
-{
-    // Implement the methods here
-}
-```
-
-Then register it in `InfrastructureDependencyInjection.cs`:
-
-```csharp
-services.AddScoped<ExampleRepository>();
-services.AddScoped<IAddRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-services.AddScoped<IGetAllRepository<ExampleEntity, GetAllExampleRequest>>(sp => sp.GetRequiredService<ExampleRepository>());
-services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
 ```
 
 ## CorrelationId
@@ -223,13 +292,6 @@ Most observability platforms accept OTLP natively (Datadog, Grafana, Honeycomb, 
 
 For full observability (logs, traces, and metrics) with any platform, **OTLP is the recommended approach**.
 
-## Post-generation setup
-
-1. Update connection strings in `appsettings.json`
-2. Replace `Jwt:SecretKey` with a secure key
-3. Implement `ExampleRepository.cs` with your chosen persistence technology
-4. Register the repository in `InfrastructureDependencyInjection.cs`
-
 ## Stack
 
 | Layer | Technologies |
@@ -240,15 +302,6 @@ For full observability (logs, traces, and metrics) with any platform, **OTLP is 
 | Infrastructure | Repository stub, persistence-agnostic |
 | Observability | .NET Aspire, OpenTelemetry, CorrelationId |
 | Tests | xUnit, Moq, FluentAssertions, Bogus, WebApplicationFactory |
-
-## Publish to NuGet
-
-```bash
-dotnet pack -c Release
-dotnet nuget push bin/Release/EugenioBandeira.CleanArchTemplate.1.0.0.nupkg \
-  --api-key $NUGET_API_KEY \
-  --source https://api.nuget.org/v3/index.json
-```
 
 ## License
 
