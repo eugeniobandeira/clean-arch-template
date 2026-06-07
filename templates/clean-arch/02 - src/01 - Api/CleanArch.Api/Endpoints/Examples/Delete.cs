@@ -1,24 +1,24 @@
 using CleanArch.Api.Abstract;
 using CleanArch.Api.Extensions;
-using CleanArch.Application.Features.Samples.Handlers.Delete;
+using CleanArch.Application.Features.Examples.Handlers.Delete;
 using ErrorOr;
 
-namespace CleanArch.Api.Endpoints.Samples;
+namespace CleanArch.Api.Endpoints.Examples;
 
 internal sealed class Delete : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/api/v1/samples/{id:guid}", HandleAsync)
-           .WithName("DeleteSample")
-           .WithDescription("Delete a sample.")
+        app.MapDelete("/api/v1/examples/{id:guid}", HandleAsync)
+           .WithName("DeleteExample")
+           .WithDescription("Delete a example.")
            .WithTags(Tags.SAMPLE)
            .RequireAuthorization();
     }
 
     private static async Task<IResult> HandleAsync(
         Guid id,
-        IDeleteSampleHandler handler,
+        IDeleteExampleHandler handler,
         HttpContext httpContext,
         CancellationToken cancellationToken = default)
     {

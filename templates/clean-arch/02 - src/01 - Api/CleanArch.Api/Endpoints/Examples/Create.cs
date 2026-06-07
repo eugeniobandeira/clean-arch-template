@@ -1,0 +1,34 @@
+using CleanArch.Api.Abstract;
+using CleanArch.Api.Extensions;
+using CleanArch.Application.Features.Examples.Handlers.Create;
+using CleanArch.Application.Features.Examples.Handlers.Create.Request;
+using CleanArch.Application.Features.Examples.Mapper;
+using CleanArch.Domain.Entities;
+using ErrorOr;
+
+namespace CleanArch.Api.Endpoints.Examples;
+
+internal sealed class Create : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/v1/examples", HandleAsync)
+           .WithName("CreateExample")
+           .WithDescription("Create a new example.")
+           .WithTags(Tags.SAMPLE)
+           .RequireAuthorization();
+    }
+
+    private static async Task<IResult> HandleAsync(
+        CreateExampleRequest request,
+        ICreateExampleHandler handler,
+        HttpContext httpContext,
+        CancellationToken cancellationToken = default)
+    {
+        ErrorOr<ExampleEntity> result = await handler.Handle(request, cancellationToken);
+
+        return result.Match(
+            entity => Results.Created($"/api/v1/examples/{entity.Id}", ExampleMapper.ToResponse(entity)),
+            errors => errors.ToProblem(httpContext));
+    }
+}
