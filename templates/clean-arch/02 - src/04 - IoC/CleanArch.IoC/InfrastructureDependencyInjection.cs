@@ -1,5 +1,3 @@
-using CleanArch.Domain.Entities;
-using CleanArch.Domain.Interfaces.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

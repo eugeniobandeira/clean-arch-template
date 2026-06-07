@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace CleanArch.AppHost;
 
@@ -22,14 +19,14 @@ internal static class ResourceBuilderExtensions
             {
                 try
                 {
-                    var hasHttps = builder.Resource.Annotations
+                    bool hasHttps = builder.Resource.Annotations
                         .OfType<EndpointAnnotation>()
                         .Any(e => e.Name.Equals("https", StringComparison.OrdinalIgnoreCase));
 
-                    var endpoint = hasHttps
+                    EndpointReference endpoint = hasHttps
                         ? builder.GetEndpoint("https")
                         : builder.GetEndpoint("http");
-                    var url = $"{endpoint.Url}/{openApiUiPath}";
+                    string url = $"{endpoint.Url}/{openApiUiPath}";
                     Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
                     return new ExecuteCommandResult { Success = true };
                 }

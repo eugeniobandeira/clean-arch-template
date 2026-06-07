@@ -26,16 +26,6 @@ public static class OpenApiExtensions
                     }
                 };
 
-                document.Components ??= new OpenApiComponents();
-                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
-                document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    Description = "Enter the JWT token in the field below."
-                });
-
                 return Task.CompletedTask;
             });
         });
