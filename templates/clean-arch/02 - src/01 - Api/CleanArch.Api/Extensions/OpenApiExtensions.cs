@@ -18,7 +18,7 @@ public static class OpenApiExtensions
                 {
                     Title = "CleanArch API",
                     Version = "v1",
-                    Description = "API gerada com Clean Architecture + Vertical Slice Template",
+                    Description = "API generated with Clean Architecture + Vertical Slice Template",
                     Contact = new OpenApiContact
                     {
                         Name = contactName,
@@ -33,7 +33,7 @@ public static class OpenApiExtensions
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
-                    Description = "Insira o token JWT no campo abaixo."
+                    Description = "Enter the JWT token in the field below."
                 });
 
                 return Task.CompletedTask;

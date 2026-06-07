@@ -1,6 +1,6 @@
 using CleanArch.Api.Abstract;
 using CleanArch.Api.Extensions;
-using CleanArch.Application.Features.Examples.Handlers.Create;
+using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Features.Examples.Handlers.Create.Request;
 using CleanArch.Application.Features.Examples.Mapper;
 using CleanArch.Domain.Entities;
@@ -15,13 +15,13 @@ internal sealed class Create : IEndpoint
         app.MapPost("/api/v1/examples", HandleAsync)
            .WithName("CreateExample")
            .WithDescription("Create a new example.")
-           .WithTags(Tags.SAMPLE)
+           .WithTags(Tags.EXAMPLE)
            .RequireAuthorization();
     }
 
     private static async Task<IResult> HandleAsync(
         CreateExampleRequest request,
-        ICreateExampleHandler handler,
+        IHandler<CreateExampleRequest, ExampleEntity> handler,
         HttpContext httpContext,
         CancellationToken cancellationToken = default)
     {

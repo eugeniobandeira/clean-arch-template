@@ -1,6 +1,7 @@
 using CleanArch.Api.Abstract;
 using CleanArch.Api.Extensions;
-using CleanArch.Application.Features.Examples.Handlers.Update;
+using CleanArch.Application.Common.Commands;
+using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
 using CleanArch.Application.Features.Examples.Mapper;
 using CleanArch.Domain.Entities;
@@ -15,18 +16,18 @@ internal sealed class Update : IEndpoint
         app.MapPut("/api/v1/examples/{id:guid}", HandleAsync)
            .WithName("UpdateExample")
            .WithDescription("Update an existing example.")
-           .WithTags(Tags.SAMPLE)
+           .WithTags(Tags.EXAMPLE)
            .RequireAuthorization();
     }
 
     private static async Task<IResult> HandleAsync(
         Guid id,
         UpdateExampleRequest request,
-        IUpdateExampleHandler handler,
+        IHandler<UpdateCommand<UpdateExampleRequest>, ExampleEntity> handler,
         HttpContext httpContext,
         CancellationToken cancellationToken = default)
     {
-        UpdateExampleCommand command = new(id, request);
+        UpdateCommand<UpdateExampleRequest> command = new(id, request);
         ErrorOr<ExampleEntity> result = await handler.Handle(command, cancellationToken);
 
         return result.Match(

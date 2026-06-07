@@ -1,13 +1,12 @@
 using CleanArch.Api.Abstract;
 using CleanArch.Api.Extensions;
+using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Common.Mapper;
-using CleanArch.Application.Features.Examples.Handlers.GetAll;
+using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
 using CleanArch.Application.Features.Examples.Mapper;
 using CleanArch.Domain.Common;
 using CleanArch.Domain.Entities;
-using CleanArch.Domain.Filters;
 using ErrorOr;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArch.Api.Endpoints.Examples;
 
@@ -18,27 +17,24 @@ internal sealed class GetAll : IEndpoint
         app.MapGet("/api/v1/examples", HandleAsync)
            .WithName("GetAllExamples")
            .WithDescription("Get all active examples.")
-           .WithTags(Tags.SAMPLE)
+           .WithTags(Tags.EXAMPLE)
            .RequireAuthorization();
     }
 
     private static async Task<IResult> HandleAsync(
-        IGetAllExampleHandler handler,
+        [AsParameters] GetAllExampleRequest request,
+        IHandler<GetAllExampleRequest, PagedResult<ExampleEntity>> handler,
         HttpContext httpContext,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10,
         CancellationToken cancellationToken = default)
     {
-        ExampleFilter filter = new(Page: page, PageSize: pageSize);
-
-        ErrorOr<PagedResult<ExampleEntity>> result = await handler.Handle(filter, cancellationToken);
+        ErrorOr<PagedResult<ExampleEntity>> result = await handler.Handle(request, cancellationToken);
 
         return result.Match(
             pagedResult => Results.Ok(ApiListResponseMapper.ToListResponse(
                 [.. pagedResult.Items.Select(ExampleMapper.ToResponse)],
                 pagedResult.Total,
-                filter.Page,
-                filter.PageSize)),
+                request.Page,
+                request.PageSize)),
             errors => errors.ToProblem(httpContext));
     }
 }

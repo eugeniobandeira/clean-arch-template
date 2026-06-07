@@ -1,6 +1,6 @@
 using CleanArch.Api.Abstract;
 using CleanArch.Api.Extensions;
-using CleanArch.Application.Features.Examples.Handlers.Delete;
+using CleanArch.Application.Common.Handler;
 using ErrorOr;
 
 namespace CleanArch.Api.Endpoints.Examples;
@@ -12,13 +12,13 @@ internal sealed class Delete : IEndpoint
         app.MapDelete("/api/v1/examples/{id:guid}", HandleAsync)
            .WithName("DeleteExample")
            .WithDescription("Delete a example.")
-           .WithTags(Tags.SAMPLE)
+           .WithTags(Tags.EXAMPLE)
            .RequireAuthorization();
     }
 
     private static async Task<IResult> HandleAsync(
         Guid id,
-        IDeleteExampleHandler handler,
+        IHandler<Guid, Deleted> handler,
         HttpContext httpContext,
         CancellationToken cancellationToken = default)
     {
