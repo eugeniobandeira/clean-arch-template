@@ -41,7 +41,7 @@
   <data name="NAME_REQUIRED" xml:space="preserve">
     <value>Nome é obrigatório.</value>
   </data>
-  <data name="SAMPLE_NOT_FOUND" xml:space="preserve">
+  <data name="EXAMPLE_NOT_FOUND" xml:space="preserve">
     <value>Amostra não encontrada.</value>
   </data>
   <data name="NAME_MAX_LENGTH" xml:space="preserve">

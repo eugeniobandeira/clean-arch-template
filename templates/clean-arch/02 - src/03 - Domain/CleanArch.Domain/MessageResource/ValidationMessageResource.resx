@@ -41,8 +41,8 @@
   <data name="NAME_REQUIRED" xml:space="preserve">
     <value>Name is required.</value>
   </data>
-  <data name="SAMPLE_NOT_FOUND" xml:space="preserve">
-    <value>Sample not found.</value>
+  <data name="EXAMPLE_NOT_FOUND" xml:space="preserve">
+    <value>Example not found.</value>
   </data>
   <data name="NAME_MAX_LENGTH" xml:space="preserve">
     <value>Name must not exceed {MaxLength} characters.</value>
