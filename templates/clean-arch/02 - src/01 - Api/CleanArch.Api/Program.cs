@@ -32,6 +32,8 @@ try
     builder.Services.AddOpenApiDocumentation(builder.Configuration);
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddCorsPolicy(builder.Configuration);
+    builder.Services.AddVersioning();
+    builder.Services.AddRateLimiting(builder.Configuration);
     builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
@@ -42,6 +44,7 @@ try
 
     app.UseExceptionHandler();
     app.UseCorrelationId();
+    app.UseRateLimiting();
     app.UseSerilogRequestLogging(options =>
     {
         options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
@@ -54,7 +57,8 @@ try
     if (app.Environment.IsDevelopment())
         app.UseOpenApiDocumentation();
 
-    app.UseHttpsRedirection();
+    if (!app.Environment.IsDevelopment())
+        app.UseHttpsRedirection();
     app.UseCorsPolicy();
     app.MapEndpoints();
 
