@@ -11,11 +11,10 @@ internal sealed class GetById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/v1/examples/{id:guid}", HandleAsync)
+        app.MapGet("/examples/{id:guid}", HandleAsync)
            .WithName("GetExampleById")
            .WithDescription("Get a example by id.")
-           .WithTags(Tags.EXAMPLE)
-           .RequireAuthorization();
+           .WithTags(Tags.EXAMPLE);
     }
 
     private static async Task<IResult> HandleAsync(

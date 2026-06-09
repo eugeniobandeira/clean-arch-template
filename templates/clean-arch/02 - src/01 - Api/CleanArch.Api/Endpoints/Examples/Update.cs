@@ -13,11 +13,10 @@ internal sealed class Update : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("/api/v1/examples/{id:guid}", HandleAsync)
+        app.MapPut("/examples/{id:guid}", HandleAsync)
            .WithName("UpdateExample")
            .WithDescription("Update an existing example.")
-           .WithTags(Tags.EXAMPLE)
-           .RequireAuthorization();
+           .WithTags(Tags.EXAMPLE);
     }
 
     private static async Task<IResult> HandleAsync(
