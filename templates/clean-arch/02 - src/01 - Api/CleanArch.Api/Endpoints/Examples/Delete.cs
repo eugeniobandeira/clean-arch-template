@@ -9,11 +9,10 @@ internal sealed class Delete : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/api/v1/examples/{id:guid}", HandleAsync)
+        app.MapDelete("/examples/{id:guid}", HandleAsync)
            .WithName("DeleteExample")
            .WithDescription("Delete a example.")
-           .WithTags(Tags.EXAMPLE)
-           .RequireAuthorization();
+           .WithTags(Tags.EXAMPLE);
     }
 
     private static async Task<IResult> HandleAsync(

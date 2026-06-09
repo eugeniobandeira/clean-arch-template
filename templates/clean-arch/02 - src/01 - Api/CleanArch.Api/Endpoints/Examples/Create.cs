@@ -12,11 +12,10 @@ internal sealed class Create : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/v1/examples", HandleAsync)
+        app.MapPost("/examples", HandleAsync)
            .WithName("CreateExample")
            .WithDescription("Create a new example.")
-           .WithTags(Tags.EXAMPLE)
-           .RequireAuthorization();
+           .WithTags(Tags.EXAMPLE);
     }
 
     private static async Task<IResult> HandleAsync(

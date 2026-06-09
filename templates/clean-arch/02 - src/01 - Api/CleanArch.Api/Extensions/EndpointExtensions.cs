@@ -19,11 +19,14 @@ internal static class EndpointExtensions
 
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
     {
+        RouteGroupBuilder v1 = app.MapVersionedApi(1)
+                                  .RequireRateLimiting(RateLimitExtension.PolicyName);
+
         IEnumerable<IEndpoint> endpoints = app.ServiceProvider
             .GetServices<IEndpoint>();
 
         foreach (IEndpoint endpoint in endpoints)
-            endpoint.MapEndpoint(app);
+            endpoint.MapEndpoint(v1);
 
         return app;
     }

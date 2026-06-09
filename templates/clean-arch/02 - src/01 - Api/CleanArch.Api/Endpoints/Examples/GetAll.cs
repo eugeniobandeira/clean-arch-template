@@ -14,11 +14,10 @@ internal sealed class GetAll : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/v1/examples", HandleAsync)
+        app.MapGet("/examples", HandleAsync)
            .WithName("GetAllExamples")
            .WithDescription("Get all active examples.")
-           .WithTags(Tags.EXAMPLE)
-           .RequireAuthorization();
+           .WithTags(Tags.EXAMPLE);
     }
 
     private static async Task<IResult> HandleAsync(
