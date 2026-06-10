@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>1.0.3</PackageVersion>
+    <PackageVersion>1.0.4</PackageVersion>
     <PackageId>EugenioBandeira.CleanArchTemplate</PackageId>
     <Title>Clean Architecture Template</Title>
     <Authors>eugeniobandeira</Authors>
-    <Description>.NET 10 template with Clean Architecture + Vertical Slice, Repository Pattern, feature handlers, JWT, CorrelationId, Serilog, and .NET Aspire.</Description>
-    <PackageTags>dotnet;template;cleanarchitecture;verticalslice;csharp;api;ddd</PackageTags>
+    <Description>.NET 10 template with Clean Architecture, Repository Pattern, feature handlers, CorrelationId, Serilog, and .NET Aspire.</Description>
+    <PackageTags>dotnet;template;cleanarchitecture;csharp;api;ddd</PackageTags>
     <TargetFramework>net10.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>

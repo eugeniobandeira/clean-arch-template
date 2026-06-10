@@ -24,7 +24,7 @@ Api → Application → Domain ← Infrastructure
 - **IoC** is the only layer that references all others.
 - **Api** depends on Application (handlers) and IoC.
 
-## Slice Pattern
+## Feature Organization
 
 Each feature lives under `Features/<FeatureName>/Handlers/<Operation>/` in the Application layer and `Endpoints/<FeatureName>/` in the Api layer. All files for one operation are co-located.
 

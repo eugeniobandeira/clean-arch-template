@@ -3,7 +3,7 @@
 [![CI](https://github.com/eugeniobandeira/clean-arch-template/actions/workflows/ci.yml/badge.svg)](https://github.com/eugeniobandeira/clean-arch-template/actions/workflows/ci.yml)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4)
 
-A .NET 10 project template for building production-ready Web APIs using Clean Architecture and Vertical Slice organization.
+A .NET 10 project template for building production-ready Web APIs using Clean Architecture.
 
 ## Tech Stack
 
@@ -49,7 +49,7 @@ MyProject/
 │   ├── 01 - Api/
 │   │   └── MyProject.Api/                  # Endpoints, middlewares, extensions
 │   ├── 02 - Application/
-│   │   └── MyProject.Application/          # Handlers, validators, DTOs (Vertical Slice)
+│   │   └── MyProject.Application/          # Handlers, validators, DTOs, mappers
 │   ├── 03 - Domain/
 │   │   └── MyProject.Domain/               # Entities, repository interfaces, constants
 │   ├── 04 - IoC/
@@ -69,13 +69,13 @@ MyProject/
 │   └── overlays/
 │       ├── dev/
 │       └── prod/
+├── Directory.Build.props                   # Shared build settings for all projects
+├── Directory.Packages.props                # Centralized NuGet package versions
 ├── Dockerfile
 └── CleanArch.slnx
 ```
 
 ## Architecture
-
-The template combines **Clean Architecture** with **Vertical Slice** organization.
 
 ### Layer responsibilities
 
@@ -86,6 +86,20 @@ The template combines **Clean Architecture** with **Vertical Slice** organizatio
 | Infrastructure | Repository implementations | Domain |
 | IoC | DI registration | All layers |
 | Api | Endpoints, middlewares, HTTP mapping | Application, Domain |
+
+### Dependency flow
+
+```
+Api → Application → Domain ← Infrastructure
+                       ↑
+              IoC (wires all layers)
+```
+
+- **Domain** has no outbound dependencies — it defines interfaces, not implementations.
+- **Infrastructure** implements Domain interfaces. It never references Application.
+- **Application** depends only on Domain interfaces, never on Infrastructure directly.
+- **IoC** is the only layer that references all others — it is the composition root.
+- **Api** depends on Application (handlers) and IoC.
 
 ### Handler pattern
 
@@ -98,21 +112,42 @@ public interface IHandler<TRequest, TResponse>
 }
 ```
 
-### Repository interfaces
-
-Repositories are segregated by operation — implement only what each feature needs:
+Handlers are registered automatically via reflection scan in IoC — no manual wiring needed when adding new features:
 
 ```csharp
-IAddRepository<TEntity>
-IGetByIdRepository<TEntity>
-IGetAllRepository<TEntity, TRequest>
-IUpdateRepository<TEntity>
-IDeleteRepository<TEntity>
+assembly.GetTypes()
+    .Where(t => !t.IsAbstract && !t.IsInterface)
+    .SelectMany(t => t.GetInterfaces()
+        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandler<,>))
+        .Select(i => (Implementation: t, Interface: i)))
+    .ToList()
+    .ForEach(x => services.AddScoped(x.Interface, x.Implementation));
 ```
 
-### Vertical Slice layout
+### Repository interfaces
 
-Each feature is fully self-contained inside `Application/Features/{Feature}/`:
+Two interfaces cover all repository needs:
+
+```csharp
+// Basic CRUD — used by most handlers
+IRepository<TEntity>
+
+// Extends with pagination — used by GetAll handlers
+IRepository<TEntity, TFilter> : IRepository<TEntity>
+```
+
+A concrete repository implements the extended interface, satisfying both:
+
+```csharp
+public sealed class ExampleRepository : IRepository<ExampleEntity, GetAllExampleRequest>
+{ ... }
+```
+
+IoC registration is automatic — any class in the Infrastructure assembly that implements `IRepository<T>` or `IRepository<T, TFilter>` is discovered and registered via reflection. No manual wiring needed.
+
+### Feature organization
+
+Features are organized by name inside `Application/Features/{Feature}/`:
 
 ```
 Application/Features/Example/
@@ -134,12 +169,15 @@ Application/Features/Example/
     └── Delete/DeleteExampleHandler.cs
 ```
 
-### Update command
+Endpoints follow the same convention in the Api layer:
 
-Updates use the generic `UpdateCommand<T>` wrapper to carry both the resource ID and the payload:
-
-```csharp
-public sealed record UpdateCommand<T>(Guid Id, T Dto);
+```
+Api/Endpoints/Example/
+├── Create.cs
+├── GetById.cs
+├── GetAll.cs
+├── Update.cs
+└── Delete.cs
 ```
 
 ### Endpoints
@@ -159,6 +197,62 @@ internal sealed class Create : IEndpoint
 ```
 
 All endpoints are mounted under `/api/v1` with rate limiting applied automatically.
+
+## Centralized Package Management
+
+All NuGet package versions are declared once in `Directory.Packages.props` at the solution root. Individual `.csproj` files reference packages **without specifying versions** — versions are resolved centrally.
+
+```xml
+<!-- Directory.Packages.props -->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup Label="Application">
+    <PackageVersion Include="ErrorOr" Version="2.0.1" />
+    <PackageVersion Include="FluentValidation" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup Label="Api">
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.14.14" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+  </ItemGroup>
+
+  <ItemGroup Label="Tests">
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="FluentAssertions" Version="8.2.0" />
+  </ItemGroup>
+  <!-- ... -->
+</Project>
+```
+
+**Benefits:**
+- No version conflicts between projects — a single source of truth.
+- To upgrade a package, edit one line in `Directory.Packages.props`.
+- PRs show version changes in one file, making upgrades easy to review.
+
+### Shared build settings
+
+`Directory.Build.props` at the solution root applies common MSBuild properties to every project automatically:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <LangVersion>latest</LangVersion>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
+</Project>
+```
+
+`03 - tests/Directory.Build.props` extends the root file and suppresses analyzer rules that conflict with test conventions (underscore naming, interface-typed fields, etc.) — without touching production project settings.
 
 ## Middlewares
 
@@ -290,12 +384,7 @@ In `appsettings.json`:
 Open `Infrastructure/Repositories/ExampleRepository.cs` and implement the methods using your chosen persistence technology (EF Core, Dapper, MongoDB, etc.):
 
 ```csharp
-public sealed class ExampleRepository :
-    IAddRepository<ExampleEntity>,
-    IGetByIdRepository<ExampleEntity>,
-    IGetAllRepository<ExampleEntity, GetAllExampleRequest>,
-    IUpdateRepository<ExampleEntity>,
-    IDeleteRepository<ExampleEntity>
+public sealed class ExampleRepository : IRepository<ExampleEntity, GetAllExampleRequest>
 {
     // Your implementation here
 }
@@ -332,7 +421,7 @@ The `Example*` files throughout the project are working stubs that demonstrate a
 
 ## Adding a New Feature
 
-The workflow for adding a feature (e.g. `Product`) mirrors the existing `Example` slice:
+The workflow for adding a feature (e.g. `Product`) mirrors the existing `Example` feature:
 
 **1. Domain** — add entity and error codes:
 
@@ -366,39 +455,13 @@ Application/Features/Products/
 **3. Infrastructure** — implement the repository:
 
 ```csharp
-public sealed class ProductRepository :
-    IAddRepository<ProductEntity>,
-    IGetByIdRepository<ProductEntity>,
-    IGetAllRepository<ProductEntity, GetAllProductRequest>,
-    IUpdateRepository<ProductEntity>,
-    IDeleteRepository<ProductEntity>
+public sealed class ProductRepository : IRepository<ProductEntity, GetAllProductRequest>
 {
     // EF Core, Dapper, etc.
 }
 ```
 
-**4. IoC** — register handlers and repository:
-
-In `ApplicationDependencyInjection.cs`:
-
-```csharp
-services.AddScoped<IHandler<CreateProductRequest, ProductEntity>, CreateProductHandler>();
-services.AddScoped<IHandler<Guid, ProductEntity>, GetByIdProductHandler>();
-services.AddScoped<IHandler<GetAllProductRequest, PagedResult<ProductEntity>>, GetAllProductHandler>();
-services.AddScoped<IHandler<UpdateCommand<UpdateProductRequest>, ProductEntity>, UpdateProductHandler>();
-services.AddScoped<IHandler<Guid, Deleted>, DeleteProductHandler>();
-```
-
-In `InfrastructureDependencyInjection.cs`:
-
-```csharp
-services.AddScoped<ProductRepository>();
-services.AddScoped<IAddRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
-services.AddScoped<IGetByIdRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
-services.AddScoped<IGetAllRepository<ProductEntity, GetAllProductRequest>>(sp => sp.GetRequiredService<ProductRepository>());
-services.AddScoped<IUpdateRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
-services.AddScoped<IDeleteRepository<ProductEntity>>(sp => sp.GetRequiredService<ProductRepository>());
-```
+**4. IoC** — nenhuma alteração necessária. Handlers e repositórios são registrados automaticamente via reflection ao implementar `IHandler<,>` e `IRepository<,>`.
 
 **5. Api** — add one file per endpoint:
 

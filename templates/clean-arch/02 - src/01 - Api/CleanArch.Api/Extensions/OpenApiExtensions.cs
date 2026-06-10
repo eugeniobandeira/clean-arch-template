@@ -18,7 +18,7 @@ public static class OpenApiExtensions
                 {
                     Title = "CleanArch API",
                     Version = "v1",
-                    Description = "API generated with Clean Architecture + Vertical Slice Template",
+                    Description = "API generated with Clean Architecture Template",
                     Contact = new OpenApiContact
                     {
                         Name = contactName,

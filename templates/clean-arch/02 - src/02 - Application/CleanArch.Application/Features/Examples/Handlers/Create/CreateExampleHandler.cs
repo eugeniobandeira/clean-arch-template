@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.Create;
 
 public sealed class CreateExampleHandler(
-    IAddRepository<ExampleEntity> repository,
+    IRepository<ExampleEntity> repository,
     IValidator<CreateExampleRequest> validator,
     ILogger<CreateExampleHandler> logger) : IHandler<CreateExampleRequest, ExampleEntity>
 {

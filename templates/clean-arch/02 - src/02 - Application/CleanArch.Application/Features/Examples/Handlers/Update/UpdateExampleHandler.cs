@@ -1,4 +1,3 @@
-using CleanArch.Application.Common.Commands;
 using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Extensions;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
@@ -12,26 +11,25 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.Update;
 
 public sealed class UpdateExampleHandler(
-    IGetByIdRepository<ExampleEntity> getByIdRepository,
-    IUpdateRepository<ExampleEntity> updateRepository,
-    IValidator<UpdateCommand<UpdateExampleRequest>> validator,
-    ILogger<UpdateExampleHandler> logger) : IHandler<UpdateCommand<UpdateExampleRequest>, ExampleEntity>
+    IRepository<ExampleEntity> repository,
+    IValidator<UpdateExampleRequest> validator,
+    ILogger<UpdateExampleHandler> logger) : IHandler<UpdateExampleRequest, ExampleEntity>
 {
     public async Task<ErrorOr<ExampleEntity>> Handle(
-        UpdateCommand<UpdateExampleRequest> command,
+        UpdateExampleRequest request,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Updating example. Payload={@Payload}", command);
+        logger.LogInformation("Updating example. Payload={@Payload}", request);
 
-        List<Error>? errors = await validator.ValidateToErrorsAsync(command, cancellationToken);
+        List<Error>? errors = await validator.ValidateToErrorsAsync(request, cancellationToken);
         if (errors is not null)
             return errors;
 
-        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(command.Id, cancellationToken);
+        ExampleEntity? entity = await repository.GetByIdAsync(request.Id, cancellationToken);
 
-        ExampleMapper.UpdateExample(entity!, command.Dto);
+        ExampleMapper.UpdateExample(entity!, request);
 
-        await updateRepository.UpdateAsync(entity!, cancellationToken);
+        await repository.UpdateAsync(entity!, cancellationToken);
 
         logger.LogInformation("Example updated successfully. Response={@Response}", entity);
 
