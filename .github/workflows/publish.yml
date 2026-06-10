@@ -23,6 +23,12 @@ jobs:
       - name: Install Aspire workload
         run: dotnet workload install aspire
 
+      - name: Restore
+        run: dotnet restore templates/clean-arch/CleanArch.slnx
+
+      - name: Build
+        run: dotnet build templates/clean-arch/CleanArch.slnx -c Release --no-restore
+
       - name: Pack template
         run: dotnet pack clean-arch-template.csproj -c Release
 
