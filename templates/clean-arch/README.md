@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/eugeniobandeira/clean-arch-template/actions/workflows/ci.yml/badge.svg)](https://github.com/eugeniobandeira/clean-arch-template/actions/workflows/ci.yml)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/EugenioBandeira.CleanArchTemplate?label=downloads)](https://www.nuget.org/packages/EugenioBandeira.CleanArchTemplate)
+[![NuGet Version](https://img.shields.io/nuget/v/EugenioBandeira.CleanArchTemplate)](https://www.nuget.org/packages/EugenioBandeira.CleanArchTemplate)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-eugeniobandeira-0077B5?logo=linkedin)](https://linkedin.com/in/eugeniobandeira)
 
 A .NET 10 project template for building production-ready Web APIs using Clean Architecture.
 
