@@ -1,4 +1,3 @@
-using CleanArch.Application.Common.Commands;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
 using CleanArch.Domain.Constants;
 using CleanArch.Domain.Entities;
@@ -8,9 +7,9 @@ using FluentValidation;
 
 namespace CleanArch.Application.Features.Examples.Handlers.Update.Validator;
 
-public sealed class UpdateExampleValidator : AbstractValidator<UpdateCommand<UpdateExampleRequest>>
+public sealed class UpdateExampleValidator : AbstractValidator<UpdateExampleRequest>
 {
-    public UpdateExampleValidator(IGetByIdRepository<ExampleEntity> repository)
+    public UpdateExampleValidator(IRepository<ExampleEntity> repository)
     {
         ClassLevelCascadeMode = CascadeMode.Stop;
 
@@ -19,18 +18,16 @@ public sealed class UpdateExampleValidator : AbstractValidator<UpdateCommand<Upd
             .WithErrorCode(ExampleErrorCodes.NotFound)
             .WithMessage(ValidationMessageResource.EXAMPLE_NOT_FOUND);
 
-        RuleFor(x => x.Dto.Name)
+        RuleFor(x => x.Name)
             .NotEmpty()
                 .WithMessage(ValidationMessageResource.NAME_REQUIRED)
             .MaximumLength(ValidationConstants.ExampleRules.NameMaxLength)
-                .WithMessage(ValidationMessageResource.NAME_MAX_LENGTH)
-            .OverridePropertyName(nameof(UpdateExampleRequest.Name));
+                .WithMessage(ValidationMessageResource.NAME_MAX_LENGTH);
 
-        RuleFor(x => x.Dto.Description)
+        RuleFor(x => x.Description)
             .NotEmpty()
                 .WithMessage(ValidationMessageResource.DESCRIPTION_REQUIRED)
             .MaximumLength(ValidationConstants.ExampleRules.DescriptionMaxLength)
-                .WithMessage(ValidationMessageResource.DESCRIPTION_MAX_LENGTH)
-            .OverridePropertyName(nameof(UpdateExampleRequest.Description));
+                .WithMessage(ValidationMessageResource.DESCRIPTION_MAX_LENGTH);
     }
 }

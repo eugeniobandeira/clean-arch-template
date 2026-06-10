@@ -1,4 +1,4 @@
-﻿using CleanArch.Application.Common.Response;
+using CleanArch.Application.Common.Response;
 
 namespace CleanArch.Application.Common.Mapper;
 
