@@ -4,7 +4,7 @@
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4)
 [![NuGet](https://img.shields.io/nuget/v/EugenioBandeira.CleanArchTemplate)](https://www.nuget.org/packages/EugenioBandeira.CleanArchTemplate)
 
-.NET 10 `dotnet new` template for building production-ready Web APIs with Clean Architecture, Vertical Slice, and .NET Aspire.
+.NET 10 `dotnet new` template for building production-ready Web APIs with Clean Architecture and .NET Aspire.
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ dotnet new clean-arch -n MyProject
 
 | Concern | What's included |
 |---|---|
-| Architecture | Clean Architecture + Vertical Slice, `IHandler<TRequest, TResponse>` pattern |
+| Architecture | Clean Architecture, `IHandler<TRequest, TResponse>` pattern |
 | Error Handling | `ErrorOr` result type, `GlobalExceptionHandler`, RFC 7807 `ProblemDetails` |
 | Validation | FluentValidation wired into handlers |
 | Logging | Serilog with structured output, correlation ID enrichment |
@@ -51,7 +51,7 @@ MyProject/
 │   └── 02 - ServiceDefaults/  # Shared OTEL, health checks, service discovery
 ├── 02 - src/
 │   ├── 01 - Api/              # Endpoints, middlewares, extensions
-│   ├── 02 - Application/      # Handlers, validators, mappers (vertical slices)
+│   ├── 02 - Application/      # Handlers, validators, mappers
 │   ├── 03 - Domain/           # Entities, interfaces, constants
 │   ├── 04 - IoC/              # Dependency injection wiring
 │   └── 05 - Infrastructure/   # Repository implementations

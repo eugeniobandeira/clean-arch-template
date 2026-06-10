@@ -3,10 +3,10 @@
   "author": "eugeniobandeira",
   "github": "https://github.com/eugeniobandeira",
   "linkedin": "https://www.linkedin.com/in/eugeniosb",
-  "classifications": [ "Web", "API", "Clean Architecture", "DDD", "Vertical Slice" ],
+  "classifications": [ "Web", "API", "Clean Architecture", "DDD" ],
   "identity": "EugenioBandeira.CleanArchTemplate",
-  "name": "Clean Architecture + Vertical Slice Template",
-  "description": ".NET 10 template with Clean Architecture, Vertical Slice, Repository Pattern, feature handlers, CorrelationId, Serilog, and .NET Aspire.",
+  "name": "Clean Architecture Template",
+  "description": ".NET 10 template with Clean Architecture, Repository Pattern, feature handlers, CorrelationId, Serilog, and .NET Aspire.",
   "shortName": "clean-arch",
   "language": "C#",
   "tags": {
