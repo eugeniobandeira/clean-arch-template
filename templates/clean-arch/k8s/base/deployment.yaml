@@ -20,6 +20,16 @@ spec:
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: ""
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: http/protobuf
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              value: ""
+            - name: OTEL_SERVICE_NAME
+              value: CleanArch.Api
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: deployment.environment=production
           resources:
             requests:
               cpu: 100m
