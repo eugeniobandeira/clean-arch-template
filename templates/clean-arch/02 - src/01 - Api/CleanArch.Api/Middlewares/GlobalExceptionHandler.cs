@@ -6,8 +6,7 @@ using System.Diagnostics;
 namespace CleanArch.Api.Middlewares;
 
 internal sealed class GlobalExceptionHandler(
-    ILogger<GlobalExceptionHandler> logger,
-    IHostEnvironment environment) : IExceptionHandler
+    ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
     private const int StatusClientClosedRequest = 499;
     private const string ProblemDetailsContentType = "application/problem+json";
@@ -47,8 +46,8 @@ internal sealed class GlobalExceptionHandler(
             }
         };
 
-        if (environment.IsDevelopment())
-            problem.Extensions["exceptionType"] = exception.GetType().FullName;
+        problem.Extensions["exceptionType"] = exception.GetType().FullName;
+        problem.Extensions["exceptionMessage"] = exception.Message;
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
         httpContext.Response.ContentType = ProblemDetailsContentType;
