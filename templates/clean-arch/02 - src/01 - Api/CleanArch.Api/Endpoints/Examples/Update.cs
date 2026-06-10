@@ -1,6 +1,5 @@
 using CleanArch.Api.Abstract;
 using CleanArch.Api.Extensions;
-using CleanArch.Application.Common.Commands;
 using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
 using CleanArch.Application.Features.Examples.Mapper;
@@ -22,12 +21,11 @@ internal sealed class Update : IEndpoint
     private static async Task<IResult> HandleAsync(
         Guid id,
         UpdateExampleRequest request,
-        IHandler<UpdateCommand<UpdateExampleRequest>, ExampleEntity> handler,
+        IHandler<UpdateExampleRequest, ExampleEntity> handler,
         HttpContext httpContext,
         CancellationToken cancellationToken = default)
     {
-        UpdateCommand<UpdateExampleRequest> command = new(id, request);
-        ErrorOr<ExampleEntity> result = await handler.Handle(command, cancellationToken);
+        ErrorOr<ExampleEntity> result = await handler.Handle(request with { Id = id }, cancellationToken);
 
         return result.Match(
             entity => Results.Ok(ExampleMapper.ToResponse(entity)),

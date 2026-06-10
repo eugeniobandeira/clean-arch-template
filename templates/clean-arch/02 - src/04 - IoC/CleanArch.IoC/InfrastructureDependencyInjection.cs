@@ -1,9 +1,8 @@
-using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
-using CleanArch.Domain.Entities;
 using CleanArch.Domain.Interfaces.Common;
-using CleanArch.Infrastructure.Repositories;
+using CleanArch.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace CleanArch.IoC;
 
@@ -20,23 +19,25 @@ internal static class InfrastructureDependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-#pragma warning disable S125
-        // Register your repository implementations below, following this pattern:
-        //
-        //   services.AddScoped<YourRepository>();
-        //   services.AddScoped<IAddRepository<YourEntity>>(sp => sp.GetRequiredService<YourRepository>());
-        //   services.AddScoped<IGetByIdRepository<YourEntity>>(sp => sp.GetRequiredService<YourRepository>());
-        //   services.AddScoped<IUpdateRepository<YourEntity>>(sp => sp.GetRequiredService<YourRepository>());
-        //   services.AddScoped<IGetAllRepository<YourEntity, YourGetAllRequest>>(sp => sp.GetRequiredService<YourRepository>());
-        //   services.AddScoped<IDeleteRepository<YourEntity>>(sp => sp.GetRequiredService<YourRepository>());
-#pragma warning restore S125
+        Assembly assembly = typeof(InfrastructureAssemblyMarker).Assembly;
 
-        services.AddScoped<ExampleRepository>();
-        services.AddScoped<IAddRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-        services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-        services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-        services.AddScoped<IGetAllRepository<ExampleEntity, GetAllExampleRequest>>(sp => sp.GetRequiredService<ExampleRepository>());
-        services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
+        assembly.GetTypes()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType &&
+                       (i.GetGenericTypeDefinition() == typeof(IRepository<>) ||
+                        i.GetGenericTypeDefinition() == typeof(IRepository<,>))))
+            .ToList()
+            .ForEach(repositoryType =>
+            {
+                services.AddScoped(repositoryType);
+
+                repositoryType.GetInterfaces()
+                    .Where(i => i.IsGenericType &&
+                               (i.GetGenericTypeDefinition() == typeof(IRepository<>) ||
+                                i.GetGenericTypeDefinition() == typeof(IRepository<,>)))
+                    .ToList()
+                    .ForEach(iface => services.AddScoped(iface, sp => sp.GetRequiredService(repositoryType)));
+            });
 
         return services;
     }

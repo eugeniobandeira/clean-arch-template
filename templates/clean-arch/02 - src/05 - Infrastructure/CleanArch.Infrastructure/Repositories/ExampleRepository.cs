@@ -5,12 +5,7 @@ using CleanArch.Domain.Interfaces.Common;
 
 namespace CleanArch.Infrastructure.Repositories;
 
-public sealed class ExampleRepository :
-    IAddRepository<ExampleEntity>,
-    IGetByIdRepository<ExampleEntity>,
-    IUpdateRepository<ExampleEntity>,
-    IDeleteRepository<ExampleEntity>,
-    IGetAllRepository<ExampleEntity, GetAllExampleRequest>
+public sealed class ExampleRepository : IRepository<ExampleEntity, GetAllExampleRequest>
 {
     public Task AddAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
     {
@@ -22,17 +17,17 @@ public sealed class ExampleRepository :
         throw new NotImplementedException();
     }
 
+    public Task<PagedResult<ExampleEntity>> GetAllAsync(GetAllExampleRequest filter, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task UpdateAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     public Task DeleteAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<PagedResult<ExampleEntity>> GetAllAsync(GetAllExampleRequest filter, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
