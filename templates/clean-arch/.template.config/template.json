@@ -18,6 +18,7 @@
   "sources": [
     {
       "exclude": [
+        ".template.config/**",
         ".claude/**",
         ".vs/**",
         "**/bin/**",
