@@ -4,43 +4,43 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
-  <Folder Name="/01 - aspire/" />
-  <Folder Name="/01 - aspire/01 - AppHost/">
-    <Project Path="01 - aspire/01 - AppHost/CleanArch.AppHost/CleanArch.AppHost.csproj" />
+  <Folder Name="/01-aspire/" />
+  <Folder Name="/01-aspire/01-AppHost/">
+    <Project Path="01-aspire/01-AppHost/CleanArch.AppHost/CleanArch.AppHost.csproj" />
   </Folder>
-  <Folder Name="/01 - aspire/02 - ServiceDefaults/">
-    <Project Path="01 - aspire/02 - ServiceDefaults/CleanArch.ServiceDefaults/CleanArch.ServiceDefaults.csproj" />
+  <Folder Name="/01-aspire/02-ServiceDefaults/">
+    <Project Path="01-aspire/02-ServiceDefaults/CleanArch.ServiceDefaults/CleanArch.ServiceDefaults.csproj" />
   </Folder>
-  <Folder Name="/02 - src/" />
-  <Folder Name="/02 - src/01 - Api/">
-    <Project Path="02 - src/01 - Api/CleanArch.Api/CleanArch.Api.csproj" />
+  <Folder Name="/02-src/" />
+  <Folder Name="/02-src/01-Api/">
+    <Project Path="02-src/01-Api/CleanArch.Api/CleanArch.Api.csproj" />
   </Folder>
-  <Folder Name="/02 - src/02 - Application/">
-    <Project Path="02 - src/02 - Application/CleanArch.Application/CleanArch.Application.csproj" />
+  <Folder Name="/02-src/02-Application/">
+    <Project Path="02-src/02-Application/CleanArch.Application/CleanArch.Application.csproj" />
   </Folder>
-  <Folder Name="/02 - src/03 - Domain/">
-    <Project Path="02 - src/03 - Domain/CleanArch.Domain/CleanArch.Domain.csproj" />
+  <Folder Name="/02-src/03-Domain/">
+    <Project Path="02-src/03-Domain/CleanArch.Domain/CleanArch.Domain.csproj" />
   </Folder>
-  <Folder Name="/02 - src/04 - IoC/">
-    <Project Path="02 - src/04 - IoC/CleanArch.IoC/CleanArch.IoC.csproj" />
+  <Folder Name="/02-src/04-IoC/">
+    <Project Path="02-src/04-IoC/CleanArch.IoC/CleanArch.IoC.csproj" />
   </Folder>
-  <Folder Name="/02 - src/05 - Infrastructure/">
-    <Project Path="02 - src/05 - Infrastructure/CleanArch.Infrastructure/CleanArch.Infrastructure.csproj" />
+  <Folder Name="/02-src/05-Infrastructure/">
+    <Project Path="02-src/05-Infrastructure/CleanArch.Infrastructure/CleanArch.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/03 - tests/" />
-  <Folder Name="/03 - tests/01 - Common/">
-    <Project Path="03 - tests/01 - Common/CleanArch.Tests.Common/CleanArch.Tests.Common.csproj" />
+  <Folder Name="/03-tests/" />
+  <Folder Name="/03-tests/01-Common/">
+    <Project Path="03-tests/01-Common/CleanArch.Tests.Common/CleanArch.Tests.Common.csproj" />
   </Folder>
-  <Folder Name="/03 - tests/02 - Validators/">
-    <Project Path="03 - tests/02 - Validators/CleanArch.Tests.Validators/CleanArch.Tests.Validators.csproj" />
+  <Folder Name="/03-tests/02-Validators/">
+    <Project Path="03-tests/02-Validators/CleanArch.Tests.Validators/CleanArch.Tests.Validators.csproj" />
   </Folder>
-  <Folder Name="/03 - tests/03 - Handlers/">
-    <Project Path="03 - tests/03 - Handlers/CleanArch.Tests.Handlers/CleanArch.Tests.Handlers.csproj" />
+  <Folder Name="/03-tests/03-Handlers/">
+    <Project Path="03-tests/03-Handlers/CleanArch.Tests.Handlers/CleanArch.Tests.Handlers.csproj" />
   </Folder>
-  <Folder Name="/03 - tests/04 - Repositories/">
-    <Project Path="03 - tests/04 - Repositories/CleanArch.Tests.Repositories/CleanArch.Tests.Repositories.csproj" />
+  <Folder Name="/03-tests/04-Repositories/">
+    <Project Path="03-tests/04-Repositories/CleanArch.Tests.Repositories/CleanArch.Tests.Repositories.csproj" />
   </Folder>
-  <Folder Name="/03 - tests/05 - Integration/">
-    <Project Path="03 - tests/05 - Integration/CleanArch.Tests.Integration/CleanArch.Tests.Integration.csproj" />
+  <Folder Name="/03-tests/05-Integration/">
+    <Project Path="03-tests/05-Integration/CleanArch.Tests.Integration/CleanArch.Tests.Integration.csproj" />
   </Folder>
 </Solution>

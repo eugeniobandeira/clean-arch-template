@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(grep -v \"^$\")",
+      "Bash(grep -E \"^.*error.*$\")",
+      "Bash(find /c/Users/Eugenio/Projects/clean-arch-template/templates/clean-arch -maxdepth 3 -type d ! -path */bin ! -path */obj ! -path */.vs)",
+      "Bash(find . -type d -not -path */bin/* -not -path */obj/* -not -path */.vs/*)",
+      "Bash(find '02-src/05-Infrastructure' -type f -name *.cs -not -path */obj/* -not -path */bin/*)",
+      "Bash(find '02-src/05-Infrastructure' -type f -name *.cs)",
+      "Bash(find '03-tests' -type f -name *.cs)",
+      "Bash(cat:*)",
+      "Bash(sort find:*)",
+      "Bash(BASE=C:/Users/Eugenio/Projects/clean-arch-template/templates/clean-arch __NEW_LINE_b531e29fc3636fc6__ echo \"=== Remaining ''''Sample'''' in file NAMES ===\" find $BASE \\\\\\(-name *Sample* -o -name *sample* \\\\\\) -not -path */bin/* -not -path */obj/* -not -path */.vs/* 2)",
+      "Bash(/dev/null __NEW_LINE_b531e29fc3636fc6__ echo echo \"=== Remaining ''''Sample'''' or ''''sample'''' in file CONTENTS ===\" grep -rl --include=*.cs --include=*.json --include=*.csproj --include=*.props --include=*.yaml --include=*.yml \"Sample\\\\|sample\" $BASE)",
+      "Bash(dotnet restore:*)"
+    ]
+  }
+}

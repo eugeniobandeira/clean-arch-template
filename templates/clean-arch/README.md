@@ -44,28 +44,28 @@ dotnet new clean-arch -n MyProject
 
 ```
 MyProject/
-├── 01 - aspire/
-│   ├── 01 - AppHost/
+├── 01-aspire/
+│   ├── 01-AppHost/
 │   │   └── MyProject.AppHost/              # .NET Aspire orchestration
-│   └── 02 - ServiceDefaults/
+│   └── 02-ServiceDefaults/
 │       └── MyProject.ServiceDefaults/      # OpenTelemetry, health checks, service discovery
-├── 02 - src/
-│   ├── 01 - Api/
+├── 02-src/
+│   ├── 01-Api/
 │   │   └── MyProject.Api/                  # Endpoints, middlewares, extensions
-│   ├── 02 - Application/
+│   ├── 02-Application/
 │   │   └── MyProject.Application/          # Handlers, validators, DTOs, mappers
-│   ├── 03 - Domain/
+│   ├── 03-Domain/
 │   │   └── MyProject.Domain/               # Entities, repository interfaces, constants
-│   ├── 04 - IoC/
+│   ├── 04-IoC/
 │   │   └── MyProject.IoC/                  # Dependency injection wiring
-│   └── 05 - Infrastructure/
+│   └── 05-Infrastructure/
 │       └── MyProject.Infrastructure/       # Repository implementations
-├── 03 - tests/
-│   ├── 01 - Common/                        # Shared builders (Bogus)
-│   ├── 02 - Validators/                    # FluentValidation unit tests
-│   ├── 03 - Handlers/                      # Handler unit tests
-│   ├── 04 - Repositories/                  # Repository tests
-│   └── 05 - Integration/                   # API integration tests (WebApplicationFactory)
+├── 03-tests/
+│   ├── 01-Common/                          # Shared builders (Bogus)
+│   ├── 02-Validators/                      # FluentValidation unit tests
+│   ├── 03-Handlers/                        # Handler unit tests
+│   ├── 04-Repositories/                    # Repository tests
+│   └── 05-Integration/                     # API integration tests (WebApplicationFactory)
 ├── docs/                                   # Architecture docs, ADRs, feature specs
 ├── iac/                                    # Infrastructure as Code (Terraform, Bicep, etc.)
 ├── k8s/                                    # Kubernetes manifests (Kustomize)
@@ -256,7 +256,7 @@ All NuGet package versions are declared once in `Directory.Packages.props` at th
 </Project>
 ```
 
-`03 - tests/Directory.Build.props` extends the root file and suppresses analyzer rules that conflict with test conventions (underscore naming, interface-typed fields, etc.) — without touching production project settings.
+`03-tests/Directory.Build.props` extends the root file and suppresses analyzer rules that conflict with test conventions (underscore naming, interface-typed fields, etc.) — without touching production project settings.
 
 ## Middlewares
 
@@ -485,13 +485,13 @@ Endpoints are registered automatically via reflection — no additional wiring n
 With Aspire orchestration (recommended):
 
 ```bash
-dotnet run --project "01 - aspire/01 - AppHost/CleanArch.AppHost"
+dotnet run --project "01-aspire/01-AppHost/CleanArch.AppHost"
 ```
 
 Or directly:
 
 ```bash
-dotnet run --project "02 - src/01 - Api/CleanArch.Api"
+dotnet run --project "02-src/01-Api/CleanArch.Api"
 ```
 
 ## Running with Docker
