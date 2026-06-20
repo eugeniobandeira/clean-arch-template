@@ -43,6 +43,7 @@ dotnet new clean-arch -n MyProject
 | Health Checks | `/health`, `/alive`, `/api/v1/health` |
 | Repository Pattern | Segregated interfaces per operation (`IAddRepository`, `IGetByIdRepository`, etc.) |
 | Tests | xUnit, Moq, FluentAssertions, Bogus — unit + integration test projects |
+| Git Hooks | Pre-commit hook that blocks commits on build failure, auto-configured on first `dotnet build` |
 | Infrastructure | Dockerfile, Kubernetes manifests (Kustomize), IaC folder |
 
 ## Generated Structure
@@ -96,6 +97,8 @@ git checkout -b feat/your-feature
 ```bash
 dotnet build templates/clean-arch/CleanArch.slnx -c Release
 ```
+
+> Running `dotnet build` once also configures the pre-commit git hook automatically via `Directory.Build.props`. From that point on, commits that break the build are blocked locally.
 
 4. Commit using [Conventional Commits](https://www.conventionalcommits.org/) and open a PR targeting `master`
 5. After merging, bump `PackageVersion` in `clean-arch-template.csproj` to publish a new NuGet release
