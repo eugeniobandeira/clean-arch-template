@@ -4,15 +4,15 @@ Use the `Example` feature as the reference implementation.
 
 ## 1. Domain
 
-- Add `<Feature>Entity.cs` under `03 - Domain/.../Entities/`
-- Add `<Feature>ErrorCodes.cs` under `03 - Domain/.../Constants/`
-- Add `<Feature>Filter.cs` under `03 - Domain/.../Filters/`
+- Add `<Feature>Entity.cs` under `03-Domain/.../Entities/`
+- Add `<Feature>ErrorCodes.cs` under `03-Domain/.../Constants/`
+- Add `<Feature>Filter.cs` under `03-Domain/.../Filters/`
 - Add resource keys to `ValidationMessageResource.resx` and `ValidationMessageResource.pt-BR.resx`
 - Regenerate `ValidationMessageResource.Designer.cs`
 
 ## 2. Application
 
-Create one subfolder per operation under `02 - Application/.../Features/<Feature>/Handlers/<Operation>/`:
+Create one subfolder per operation under `02-Application/.../Features/<Feature>/Handlers/<Operation>/`:
 
 ```
 Handlers/
@@ -33,7 +33,7 @@ FeatureResponse.cs
 
 ## 3. Infrastructure
 
-- Add `<Feature>Repository.cs` under `05 - Infrastructure/.../Repositories/`
+- Add `<Feature>Repository.cs` under `05-Infrastructure/.../Repositories/`
 
 ## 4. IoC
 
@@ -42,7 +42,7 @@ FeatureResponse.cs
 
 ## 5. Api
 
-- Add one file per operation under `01 - Api/.../Endpoints/<Feature>/`
+- Add one file per operation under `01-Api/.../Endpoints/<Feature>/`
 - Register the tag in `Endpoints/Tags.cs`
 
 ## 6. Tests

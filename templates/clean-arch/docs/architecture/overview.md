@@ -3,11 +3,11 @@
 ## Layer Structure
 
 ```
-01 - Api              → Endpoints, Extensions, OpenAPI config
-02 - Application      → Handlers, Validators, DTOs, Mappers
-03 - Domain           → Entities, Interfaces, Constants, Resources
-04 - IoC              → Dependency injection registrations
-05 - Infrastructure   → Repository implementations, persistence
+01-Api              → Endpoints, Extensions, OpenAPI config
+02-Application      → Handlers, Validators, DTOs, Mappers
+03-Domain           → Entities, Interfaces, Constants, Resources
+04-IoC              → Dependency injection registrations
+05-Infrastructure   → Repository implementations, persistence
 ```
 
 ## Dependency Flow
