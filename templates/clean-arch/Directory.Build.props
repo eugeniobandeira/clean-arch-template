@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <Target Name="ConfigureGitHooks" BeforeTargets="Build" Condition="'$(CI)' == ''">
-    <Exec Command="git config core.hooksPath .githooks" ContinueOnError="true" />
-    <Exec Command="chmod +x .githooks/pre-commit" ContinueOnError="true" />
+    <Exec Command="git config core.hooksPath $(MSBuildThisFileDirectory).hooks" ContinueOnError="true" />
+    <Exec Command="chmod +x $(MSBuildThisFileDirectory).hooks/pre-commit" ContinueOnError="true" />
   </Target>
 
 </Project>
