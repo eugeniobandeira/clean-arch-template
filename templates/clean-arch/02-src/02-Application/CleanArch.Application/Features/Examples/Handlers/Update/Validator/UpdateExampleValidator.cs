@@ -9,7 +9,7 @@ namespace CleanArch.Application.Features.Examples.Handlers.Update.Validator;
 
 public sealed class UpdateExampleValidator : AbstractValidator<UpdateExampleRequest>
 {
-    public UpdateExampleValidator(IRepository<ExampleEntity> repository)
+    public UpdateExampleValidator(IGetByIdRepository<ExampleEntity> repository)
     {
         ClassLevelCascadeMode = CascadeMode.Stop;
 

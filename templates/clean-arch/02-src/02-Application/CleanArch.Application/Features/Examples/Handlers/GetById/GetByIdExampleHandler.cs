@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.GetById;
 
 public sealed class GetByIdExampleHandler(
-    IRepository<ExampleEntity> repository,
+    IGetByIdRepository<ExampleEntity> repository,
     ILogger<GetByIdExampleHandler> logger) : IHandler<Guid, ExampleEntity>
 {
     public async Task<ErrorOr<ExampleEntity>> Handle(Guid id, CancellationToken cancellationToken = default)

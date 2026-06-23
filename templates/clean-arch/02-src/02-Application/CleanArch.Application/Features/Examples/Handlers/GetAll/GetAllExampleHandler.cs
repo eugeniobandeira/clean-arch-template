@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.GetAll;
 
 public sealed class GetAllExampleHandler(
-    IRepository<ExampleEntity, GetAllExampleRequest> repository,
+    IGetAllRepository<ExampleEntity, GetAllExampleRequest> repository,
     ILogger<GetAllExampleHandler> logger) : IHandler<GetAllExampleRequest, PagedResult<ExampleEntity>>
 {
     public async Task<ErrorOr<PagedResult<ExampleEntity>>> Handle(GetAllExampleRequest request, CancellationToken cancellationToken = default)

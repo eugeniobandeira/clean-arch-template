@@ -2,6 +2,7 @@ using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Extensions;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
 using CleanArch.Application.Features.Examples.Mapper;
+using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Entities;
 using CleanArch.Domain.Interfaces.Common;
 using ErrorOr;
@@ -11,7 +12,9 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.Update;
 
 public sealed class UpdateExampleHandler(
-    IRepository<ExampleEntity> repository,
+    IGetByIdRepository<ExampleEntity> getByIdRepository,
+    IUpdateRepository<ExampleEntity> updateRepository,
+    IUnitOfWork unitOfWork,
     IValidator<UpdateExampleRequest> validator,
     ILogger<UpdateExampleHandler> logger) : IHandler<UpdateExampleRequest, ExampleEntity>
 {
@@ -25,11 +28,12 @@ public sealed class UpdateExampleHandler(
         if (errors is not null)
             return errors;
 
-        ExampleEntity? entity = await repository.GetByIdAsync(request.Id, cancellationToken);
+        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(request.Id, cancellationToken);
 
         ExampleMapper.UpdateExample(entity!, request);
 
-        await repository.UpdateAsync(entity!, cancellationToken);
+        await updateRepository.UpdateAsync(entity!, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
 
         logger.LogInformation("Example updated successfully. Response={@Response}", entity);
 
