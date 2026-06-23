@@ -1,8 +1,13 @@
+using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
+using CleanArch.Domain.Entities;
+using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Interfaces.Common;
-using CleanArch.Infrastructure;
+using CleanArch.Domain.Interfaces.Examples;
+using CleanArch.Infrastructure.Context;
+using CleanArch.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace CleanArch.IoC;
 
@@ -12,32 +17,36 @@ internal static class InfrastructureDependencyInjection
         IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddDbContext(configuration);
         services.AddRepositories();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDbContext(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        string connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(connectionString));
 
         return services;
     }
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        Assembly assembly = typeof(InfrastructureAssemblyMarker).Assembly;
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        assembly.GetTypes()
-            .Where(t => !t.IsAbstract && !t.IsInterface)
-            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType &&
-                       (i.GetGenericTypeDefinition() == typeof(IRepository<>) ||
-                        i.GetGenericTypeDefinition() == typeof(IRepository<,>))))
-            .ToList()
-            .ForEach(repositoryType =>
-            {
-                services.AddScoped(repositoryType);
-
-                repositoryType.GetInterfaces()
-                    .Where(i => i.IsGenericType &&
-                               (i.GetGenericTypeDefinition() == typeof(IRepository<>) ||
-                                i.GetGenericTypeDefinition() == typeof(IRepository<,>)))
-                    .ToList()
-                    .ForEach(iface => services.AddScoped(iface, sp => sp.GetRequiredService(repositoryType)));
-            });
+        services.AddScoped<ExampleRepository>();
+        services.AddScoped<IExampleRepository>(sp => sp.GetRequiredService<ExampleRepository>());
+        services.AddScoped<IAddRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
+        services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
+        services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
+        services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
+        services.AddScoped<IGetAllRepository<ExampleEntity, GetAllExampleRequest>>(sp => sp.GetRequiredService<ExampleRepository>());
 
         return services;
     }
