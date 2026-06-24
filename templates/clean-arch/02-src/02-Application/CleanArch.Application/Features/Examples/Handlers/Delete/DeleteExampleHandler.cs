@@ -1,4 +1,5 @@
 using CleanArch.Application.Common.Handler;
+using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Constants;
 using CleanArch.Domain.Entities;
 using CleanArch.Domain.Interfaces.Common;
@@ -8,14 +9,16 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.Delete;
 
 public sealed class DeleteExampleHandler(
-    IRepository<ExampleEntity> repository,
+    IGetByIdRepository<ExampleEntity> getByIdRepository,
+    IDeleteRepository<ExampleEntity> deleteRepository,
+    IUnitOfWork unitOfWork,
     ILogger<DeleteExampleHandler> logger) : IHandler<Guid, Deleted>
 {
     public async Task<ErrorOr<Deleted>> Handle(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting example. Id={Id}", id);
 
-        ExampleEntity? entity = await repository.GetByIdAsync(id, cancellationToken);
+        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(id, cancellationToken);
 
         if (entity is null)
         {
@@ -23,7 +26,8 @@ public sealed class DeleteExampleHandler(
             return Error.NotFound(ExampleErrorCodes.NotFound, $"Example {id} not found.");
         }
 
-        await repository.DeleteAsync(entity, cancellationToken);
+        await deleteRepository.DeleteAsync(entity, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
 
         logger.LogInformation("Example deleted successfully. Response={@Response}", entity);
 

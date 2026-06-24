@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    name: Bump & Publish
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version bump
+        id: bump
+        run: |
+          CURRENT=$(grep -oP '(?<=<PackageVersion>)[^<]+' clean-arch-template.csproj)
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+          LAST_SHA=$(git log --follow -1 --format="%H" -- clean-arch-template.csproj)
+          if [ -z "$LAST_SHA" ]; then
+            COMMITS=$(git log --format="%s")
+          else
+            COMMITS=$(git log --format="%s" "${LAST_SHA}..HEAD")
+          fi
+
+          if [ -z "$COMMITS" ]; then
+            echo "No new commits to analyze — skipping release."
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          BUMP="patch"
+          while IFS= read -r msg; do
+            if echo "$msg" | grep -qE "(BREAKING[ -]CHANGE|^[a-z]+(\(.+\))?!:)"; then
+              BUMP="major"
+              break
+            elif echo "$msg" | grep -qE "^feat(\(.+\))?:"; then
+              [ "$BUMP" != "major" ] && BUMP="minor"
+            fi
+          done <<< "$COMMITS"
+
+          IFS='.' read -r MAJ MIN PAT <<< "$CURRENT"
+          case $BUMP in
+            major) NEW="$((MAJ+1)).0.0" ;;
+            minor) NEW="${MAJ}.$((MIN+1)).0" ;;
+            patch) NEW="${MAJ}.${MIN}.$((PAT+1))" ;;
+          esac
+
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          echo "new=$NEW" >> $GITHUB_OUTPUT
+          echo "::notice::$CURRENT → $NEW ($BUMP bump)"
+
+      - name: Update PackageVersion
+        if: steps.bump.outputs.skip != 'true'
+        run: |
+          sed -i "s|<PackageVersion>.*</PackageVersion>|<PackageVersion>${{ steps.bump.outputs.new }}</PackageVersion>|" clean-arch-template.csproj
+
+      - name: Commit version bump
+        if: steps.bump.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add clean-arch-template.csproj
+          git commit -m "chore(release): bump version to ${{ steps.bump.outputs.new }}"
+          git push
+
+      - name: Setup .NET
+        if: steps.bump.outputs.skip != 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install Aspire workload
+        if: steps.bump.outputs.skip != 'true'
+        run: dotnet workload install aspire
+
+      - name: Restore
+        if: steps.bump.outputs.skip != 'true'
+        run: dotnet restore templates/clean-arch/CleanArch.slnx
+
+      - name: Build
+        if: steps.bump.outputs.skip != 'true'
+        run: dotnet build templates/clean-arch/CleanArch.slnx -c Release --no-restore
+
+      - name: Pack template
+        if: steps.bump.outputs.skip != 'true'
+        run: dotnet pack clean-arch-template.csproj -c Release
+
+      - name: Push to NuGet
+        if: steps.bump.outputs.skip != 'true'
+        run: |
+          dotnet nuget push bin/Release/*.nupkg \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate

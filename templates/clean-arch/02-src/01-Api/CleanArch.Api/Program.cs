@@ -4,7 +4,6 @@ using CleanArch.IoC;
 using CleanArch.ServiceDefaults;
 using Serilog;
 using System.Globalization;
-using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
@@ -34,7 +33,7 @@ try
     builder.Services.AddCorsPolicy(builder.Configuration);
     builder.Services.AddVersioning();
     builder.Services.AddRateLimiting(builder.Configuration);
-    builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
+    builder.Services.AddEndpoints();
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
 

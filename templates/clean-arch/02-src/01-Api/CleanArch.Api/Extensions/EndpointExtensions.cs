@@ -5,13 +5,14 @@ namespace CleanArch.Api.Extensions;
 
 internal static class EndpointExtensions
 {
-    public static IServiceCollection AddEndpoints(this IServiceCollection services, Assembly assembly)
+    public static IServiceCollection AddEndpoints(this IServiceCollection services)
     {
-        IEnumerable<Type> endpointTypes = assembly.GetTypes()
-            .Where(t => t is { IsAbstract: false, IsInterface: false }
+        IEnumerable<Type> endpointTypes = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t is { IsClass: true, IsAbstract: false }
                         && t.IsAssignableTo(typeof(IEndpoint)));
 
-        foreach (Type? type in endpointTypes)
+        foreach (Type type in endpointTypes)
             services.AddTransient(typeof(IEndpoint), type);
 
         return services;

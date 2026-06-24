@@ -2,6 +2,7 @@ using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Extensions;
 using CleanArch.Application.Features.Examples.Handlers.Create.Request;
 using CleanArch.Application.Features.Examples.Mapper;
+using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Entities;
 using CleanArch.Domain.Interfaces.Common;
 using ErrorOr;
@@ -11,7 +12,8 @@ using Microsoft.Extensions.Logging;
 namespace CleanArch.Application.Features.Examples.Handlers.Create;
 
 public sealed class CreateExampleHandler(
-    IRepository<ExampleEntity> repository,
+    IAddRepository<ExampleEntity> repository,
+    IUnitOfWork unitOfWork,
     IValidator<CreateExampleRequest> validator,
     ILogger<CreateExampleHandler> logger) : IHandler<CreateExampleRequest, ExampleEntity>
 {
@@ -28,6 +30,7 @@ public sealed class CreateExampleHandler(
         ExampleEntity entity = ExampleMapper.CreateExample(request);
 
         await repository.AddAsync(entity, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
 
         logger.LogInformation("Example created successfully. Response={@Response}", entity);
 
