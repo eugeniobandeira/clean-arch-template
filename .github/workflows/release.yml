@@ -21,10 +21,17 @@ jobs:
       - name: Determine version bump
         id: bump
         run: |
-          CURRENT=$(grep -oP '(?<=<PackageVersion>)[^<]+' clean-arch-template.csproj)
+          LAST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          if [ -z "$LAST_TAG" ]; then
+            CURRENT=$(grep -oP '(?<=<PackageVersion>)[^<]+' clean-arch-template.csproj)
+            LAST_SHA=$(git log --follow -1 --format="%H" -- clean-arch-template.csproj)
+          else
+            CURRENT=${LAST_TAG#v}
+            LAST_SHA=$(git rev-list -n 1 "$LAST_TAG")
+          fi
+
           echo "current=$CURRENT" >> $GITHUB_OUTPUT
 
-          LAST_SHA=$(git log --follow -1 --format="%H" -- clean-arch-template.csproj)
           if [ -z "$LAST_SHA" ]; then
             COMMITS=$(git log --format="%s")
           else
@@ -32,7 +39,7 @@ jobs:
           fi
 
           if [ -z "$COMMITS" ]; then
-            echo "No new commits to analyze — skipping release."
+            echo "No new commits since last release — skipping."
             echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -58,19 +65,13 @@ jobs:
           echo "new=$NEW" >> $GITHUB_OUTPUT
           echo "::notice::$CURRENT → $NEW ($BUMP bump)"
 
-      - name: Update PackageVersion
-        if: steps.bump.outputs.skip != 'true'
-        run: |
-          sed -i "s|<PackageVersion>.*</PackageVersion>|<PackageVersion>${{ steps.bump.outputs.new }}</PackageVersion>|" clean-arch-template.csproj
-
-      - name: Commit version bump
+      - name: Create and push version tag
         if: steps.bump.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add clean-arch-template.csproj
-          git commit -m "chore(release): bump version to ${{ steps.bump.outputs.new }}"
-          git push
+          git tag "v${{ steps.bump.outputs.new }}"
+          git push origin "v${{ steps.bump.outputs.new }}"
 
       - name: Setup .NET
         if: steps.bump.outputs.skip != 'true'
@@ -92,7 +93,7 @@ jobs:
 
       - name: Pack template
         if: steps.bump.outputs.skip != 'true'
-        run: dotnet pack clean-arch-template.csproj -c Release
+        run: dotnet pack clean-arch-template.csproj -c Release -p:PackageVersion=${{ steps.bump.outputs.new }}
 
       - name: Push to NuGet
         if: steps.bump.outputs.skip != 'true'
