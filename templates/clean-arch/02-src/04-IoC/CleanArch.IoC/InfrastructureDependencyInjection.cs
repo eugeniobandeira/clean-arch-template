@@ -1,4 +1,3 @@
-using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
 using CleanArch.Domain.Entities;
 using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Interfaces.Common;
@@ -46,7 +45,6 @@ internal static class InfrastructureDependencyInjection
         services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
         services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
         services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-        services.AddScoped<IGetAllRepository<ExampleEntity, GetAllExampleRequest>>(sp => sp.GetRequiredService<ExampleRepository>());
 
         return services;
     }
