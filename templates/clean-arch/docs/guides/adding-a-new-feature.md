@@ -6,7 +6,8 @@ Use the `Example` feature as the reference implementation.
 
 - Add `<Feature>Entity.cs` under `03-Domain/.../Entities/`
 - Add `<Feature>ErrorCodes.cs` under `03-Domain/.../Constants/`
-- Add `<Feature>Filter.cs` under `03-Domain/.../Filters/`
+- Add `<Feature>Filter.cs` under `03-Domain/.../Filters/` — encapsulates pagination and search criteria for GetAll
+- Add `I<Feature>Repository.cs` under `03-Domain/.../Interfaces/<Feature>/` — composite interface combining `IAddRepository<T>`, `IGetByIdRepository<T>`, `IGetAllRepository<T, TFilter>`, `IUpdateRepository<T>`, `IDeleteRepository<T>` as needed
 - Add resource keys to `ValidationMessageResource.resx` and `ValidationMessageResource.pt-BR.resx`
 - Regenerate `ValidationMessageResource.Designer.cs`
 
@@ -27,7 +28,7 @@ Handlers/
   Update/
     UpdateFeatureCommand.cs
     ...
-Mapper/FeatureMapper.cs
+Mapper/FeatureMapper.cs    # CreateFeature, UpdateFeature, ToResponse, ToFilter
 FeatureResponse.cs
 ```
 

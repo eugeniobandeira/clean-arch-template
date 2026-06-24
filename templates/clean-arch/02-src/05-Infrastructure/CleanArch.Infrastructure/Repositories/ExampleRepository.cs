@@ -1,4 +1,4 @@
-using CleanArch.Domain.Common;
+﻿using CleanArch.Domain.Common;
 using CleanArch.Domain.Entities;
 using CleanArch.Domain.Filters.Examples;
 using CleanArch.Domain.Interfaces.Examples;
@@ -7,19 +7,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CleanArch.Infrastructure.Repositories;
 
-public sealed class ExampleRepository(AppDbContext context) : IExampleRepository
+public sealed class ExampleRepository(AppDbContext dbContext) : IExampleRepository
 {
     public async Task AddAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
-        => await context.Examples.AddAsync(entity, cancellationToken);
+        => await dbContext.Examples.AddAsync(entity, cancellationToken);
 
     public async Task<ExampleEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-        => await context.Examples.FindAsync([id], cancellationToken);
+        => await dbContext.Examples.FindAsync([id], cancellationToken);
 
     public async Task<PagedResult<ExampleEntity>> GetAllAsync(
         ExampleFilter filter,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<ExampleEntity> query = context.Examples.AsNoTracking();
+        IQueryable<ExampleEntity> query = dbContext.Examples.AsNoTracking();
 
         if (filter.Name is not null)
             query = query.Where(e => e.Name.Contains(filter.Name));
@@ -40,13 +40,13 @@ public sealed class ExampleRepository(AppDbContext context) : IExampleRepository
 
     public Task UpdateAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
     {
-        context.Examples.Update(entity);
+        dbContext.Examples.Update(entity);
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
     {
-        context.Examples.Remove(entity);
+        dbContext.Examples.Remove(entity);
         return Task.CompletedTask;
     }
 }

@@ -112,38 +112,52 @@ public interface IHandler<TRequest, TResponse>
 }
 ```
 
-Handlers are registered automatically via reflection scan in IoC — no manual wiring needed when adding new features:
+Handlers are registered explicitly in `ApplicationDependencyInjection.cs`:
 
 ```csharp
-assembly.GetTypes()
-    .Where(t => !t.IsAbstract && !t.IsInterface)
-    .SelectMany(t => t.GetInterfaces()
-        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandler<,>))
-        .Select(i => (Implementation: t, Interface: i)))
-    .ToList()
-    .ForEach(x => services.AddScoped(x.Interface, x.Implementation));
+services.AddScoped<IHandler<CreateExampleRequest, ExampleEntity>, CreateExampleHandler>();
+services.AddScoped<IHandler<Guid, ExampleEntity>, GetByIdExampleHandler>();
+// ...
 ```
 
 ### Repository interfaces
 
-Two interfaces cover all repository needs:
+Repositories use **segregated interfaces** — one interface per operation — combined into a feature-specific composite interface:
 
 ```csharp
-// Basic CRUD — used by most handlers
-IRepository<TEntity>
+// Segregated interfaces (Domain/Interfaces/Common)
+IAddRepository<T>
+IGetByIdRepository<T>
+IUpdateRepository<T>
+IDeleteRepository<T>
+IGetAllRepository<T, TFilter>   // TFilter lives in Domain/Filters
 
-// Extends with pagination — used by GetAll handlers
-IRepository<TEntity, TFilter> : IRepository<TEntity>
+// Composite interface per feature (Domain/Interfaces/<Feature>)
+public interface IExampleRepository :
+    IAddRepository<ExampleEntity>,
+    IGetByIdRepository<ExampleEntity>,
+    IGetAllRepository<ExampleEntity, ExampleFilter>,
+    IUpdateRepository<ExampleEntity>,
+    IDeleteRepository<ExampleEntity>
+{ }
 ```
 
-A concrete repository implements the extended interface, satisfying both:
+A concrete repository implements only the composite interface:
 
 ```csharp
-public sealed class ExampleRepository : IRepository<ExampleEntity, GetAllExampleRequest>
+public sealed class ExampleRepository : IExampleRepository
 { ... }
 ```
 
-IoC registration is automatic — any class in the Infrastructure assembly that implements `IRepository<T>` or `IRepository<T, TFilter>` is discovered and registered via reflection. No manual wiring needed.
+**Filter types** (`ExampleFilter`, etc.) live in `Domain/Filters/` — keeping the Domain layer free of Application or Infrastructure dependencies. Handlers map the HTTP request to the filter via the feature mapper:
+
+```csharp
+// Application/Features/Example/Mapper/ExampleMapper.cs
+public static ExampleFilter ToFilter(GetAllExampleRequest request)
+    => new(request.Page, request.PageSize, request.Name, request.IsActive);
+```
+
+Repository and interface registrations are explicit in `InfrastructureDependencyInjection.cs` — no reflection-based discovery.
 
 ### Feature organization
 
@@ -384,7 +398,7 @@ In `appsettings.json`:
 Open `Infrastructure/Repositories/ExampleRepository.cs` and implement the methods using your chosen persistence technology (EF Core, Dapper, MongoDB, etc.):
 
 ```csharp
-public sealed class ExampleRepository : IRepository<ExampleEntity, GetAllExampleRequest>
+public sealed class ExampleRepository : IExampleRepository
 {
     // Your implementation here
 }

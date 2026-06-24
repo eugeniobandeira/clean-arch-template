@@ -101,7 +101,10 @@ dotnet build templates/clean-arch/CleanArch.slnx -c Release
 > Running `dotnet build` once also configures the pre-commit git hook automatically via `Directory.Build.props`. From that point on, commits that break the build are blocked locally.
 
 4. Commit using [Conventional Commits](https://www.conventionalcommits.org/) and open a PR targeting `master`
-5. After merging, bump `PackageVersion` in `clean-arch-template.csproj` to publish a new NuGet release
+5. After merging, the `release` workflow automatically bumps `PackageVersion` and publishes to NuGet:
+   - `fix:`, `refactor:`, `chore:` → patch bump
+   - `feat:` → minor bump
+   - `feat!:` / `BREAKING CHANGE` → major bump
 
 ## License
 

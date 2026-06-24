@@ -5,7 +5,7 @@
 ```
 01-Api              → Endpoints, Extensions, OpenAPI config
 02-Application      → Handlers, Validators, DTOs, Mappers
-03-Domain           → Entities, Interfaces, Constants, Resources
+03-Domain           → Entities, Interfaces, Filters, Constants, Resources
 04-IoC              → Dependency injection registrations
 05-Infrastructure   → Repository implementations, persistence
 ```
@@ -23,6 +23,22 @@ Api → Application → Domain ← Infrastructure
 - **Application** depends only on Domain interfaces, never on Infrastructure directly.
 - **IoC** is the only layer that references all others.
 - **Api** depends on Application (handlers) and IoC.
+
+## Repository Pattern
+
+Repositories use segregated interfaces — one per operation — combined into a feature-specific composite:
+
+```
+Domain/Interfaces/Common/     IAddRepository<T>, IGetByIdRepository<T>,
+                              IUpdateRepository<T>, IDeleteRepository<T>,
+                              IGetAllRepository<T, TFilter>
+
+Domain/Interfaces/<Feature>/  I<Feature>Repository (implements all of the above)
+
+Domain/Filters/<Feature>/     <Feature>Filter (pagination + search criteria)
+```
+
+Handlers inject `I<Feature>Repository` directly. The HTTP request is mapped to the filter in the feature mapper (`ToFilter`) before being passed to the repository. Registration is explicit in `InfrastructureDependencyInjection.cs`.
 
 ## Feature Organization
 
