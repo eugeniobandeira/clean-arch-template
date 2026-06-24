@@ -34,7 +34,7 @@ FeatureResponse.cs
 
 ## 3. Infrastructure
 
-- Add `<Feature>Repository.cs` under `05-Infrastructure/.../Repositories/`
+- Add `<Feature>Repository.cs` under `05-Infrastructure/.../Repositories/` implementing `I<Feature>Repository`
 
 ## 4. IoC
 
