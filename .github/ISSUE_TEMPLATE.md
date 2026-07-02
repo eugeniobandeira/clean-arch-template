@@ -27,5 +27,4 @@
 - [ ] Reproduced with a freshly generated project (`dotnet new clean-arch`) *(if bug)*
 - [ ] Checked existing issues for duplicates
 - [ ] Does not break existing generated projects *(if feature)*
-- [ ] Follows Clean Architecture / Vertical Slice conventions used in the template
 - [ ] No Portuguese text introduced outside `*.pt-BR.resx` files
