@@ -1,9 +1,9 @@
-﻿using CleanArch.Api.Extensions;
+﻿using System.Globalization;
+using CleanArch.Api.Extensions;
 using CleanArch.Api.Middlewares;
 using CleanArch.IoC;
 using CleanArch.ServiceDefaults;
 using Serilog;
-using System.Globalization;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)

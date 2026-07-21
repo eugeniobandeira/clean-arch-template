@@ -1,5 +1,5 @@
+﻿using System.Reflection;
 using CleanArch.Api.Abstract;
-using System.Reflection;
 
 namespace CleanArch.Api.Extensions;
 
