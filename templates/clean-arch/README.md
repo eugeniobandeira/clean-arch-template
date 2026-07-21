@@ -108,7 +108,7 @@ Every use case implements `IHandler<TRequest, TResponse>`, returning `ErrorOr<T>
 ```csharp
 public interface IHandler<TRequest, TResponse>
 {
-    Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken cancellationToken = default);
+    Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken ct = default);
 }
 ```
 
@@ -334,7 +334,7 @@ Configured via `appsettings.json`. Update the allowed origins before going to pr
 Business logic never throws — it returns `ErrorOr<T>`. Endpoints map the result to HTTP responses:
 
 ```csharp
-ErrorOr<ExampleEntity> result = await handler.Handle(request, cancellationToken);
+ErrorOr<ExampleEntity> result = await handler.Handle(request, ct);
 
 return result.Match(
     entity => Results.Ok(entity.ToResponse()),
@@ -385,13 +385,15 @@ After running `dotnet new clean-arch -n MyProject`, complete the following steps
 
 ### 1. Replace the connection string
 
-In `appsettings.json`:
+The template uses PostgreSQL (Npgsql) via EF Core. `appsettings.json` ships with a local development default:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "your-real-connection-string"
+  "DefaultConnection": "Host=localhost;Port=5432;Database=CleanArchDb;Username=postgres;Password=postgres"
 }
 ```
+
+Running via the Aspire AppHost (`dotnet run` in `01-aspire/01-AppHost/CleanArch.AppHost`) provisions a PostgreSQL container automatically (requires Docker running) and injects the connection string for you — no manual setup needed for local development. Replace the value above only if you run the API standalone against a different database.
 
 ### 2. Implement the repository
 

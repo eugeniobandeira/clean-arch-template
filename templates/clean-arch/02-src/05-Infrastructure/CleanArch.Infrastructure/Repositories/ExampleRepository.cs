@@ -9,15 +9,15 @@ namespace CleanArch.Infrastructure.Repositories;
 
 public sealed class ExampleRepository(AppDbContext dbContext) : IExampleRepository
 {
-    public async Task AddAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
-        => await dbContext.Examples.AddAsync(entity, cancellationToken);
+    public async Task AddAsync(ExampleEntity entity, CancellationToken ct = default)
+        => await dbContext.Examples.AddAsync(entity, ct);
 
-    public async Task<ExampleEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-        => await dbContext.Examples.FindAsync([id], cancellationToken);
+    public async Task<ExampleEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        => await dbContext.Examples.FindAsync([id], ct);
 
     public async Task<PagedResult<ExampleEntity>> GetAllAsync(
         ExampleFilter filter,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         IQueryable<ExampleEntity> query = dbContext.Examples.AsNoTracking();
 
@@ -27,24 +27,24 @@ public sealed class ExampleRepository(AppDbContext dbContext) : IExampleReposito
         if (filter.IsActive is not null)
             query = query.Where(e => e.IsActive == filter.IsActive);
 
-        int total = await query.CountAsync(cancellationToken);
+        int total = await query.CountAsync(ct);
 
         List<ExampleEntity> items = await query
             .OrderBy(e => e.Name)
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         return new PagedResult<ExampleEntity>(items, total);
     }
 
-    public Task UpdateAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(ExampleEntity entity, CancellationToken ct = default)
     {
         dbContext.Examples.Update(entity);
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(ExampleEntity entity, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(ExampleEntity entity, CancellationToken ct = default)
     {
         dbContext.Examples.Remove(entity);
         return Task.CompletedTask;

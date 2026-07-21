@@ -1,9 +1,9 @@
-using CleanArch.Application.Common.Handler;
+﻿using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Extensions;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
 using CleanArch.Application.Features.Examples.Mapper;
-using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Entities;
+using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Interfaces.Common;
 using ErrorOr;
 using FluentValidation;
@@ -20,20 +20,20 @@ public sealed class UpdateExampleHandler(
 {
     public async Task<ErrorOr<ExampleEntity>> Handle(
         UpdateExampleRequest request,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         logger.LogInformation("Updating example. Payload={@Payload}", request);
 
-        List<Error>? errors = await validator.ValidateToErrorsAsync(request, cancellationToken);
+        List<Error>? errors = await validator.ValidateToErrorsAsync(request, ct);
         if (errors is not null)
             return errors;
 
-        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(request.Id, cancellationToken);
+        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(request.Id, ct);
 
         ExampleMapper.UpdateExample(entity!, request);
 
-        await updateRepository.UpdateAsync(entity!, cancellationToken);
-        await unitOfWork.CommitAsync(cancellationToken);
+        await updateRepository.UpdateAsync(entity!, ct);
+        await unitOfWork.CommitAsync(ct);
 
         logger.LogInformation("Example updated successfully. Response={@Response}", entity);
 

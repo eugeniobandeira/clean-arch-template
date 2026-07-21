@@ -13,11 +13,11 @@ public sealed class GetAllExampleHandler(
     IExampleRepository repository,
     ILogger<GetAllExampleHandler> logger) : IHandler<GetAllExampleRequest, PagedResult<ExampleEntity>>
 {
-    public async Task<ErrorOr<PagedResult<ExampleEntity>>> Handle(GetAllExampleRequest request, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<PagedResult<ExampleEntity>>> Handle(GetAllExampleRequest request, CancellationToken ct = default)
     {
         logger.LogDebug("Fetching examples. Payload={@Payload}", request);
 
-        PagedResult<ExampleEntity> result = await repository.GetAllAsync(ExampleMapper.ToFilter(request), cancellationToken);
+        PagedResult<ExampleEntity> result = await repository.GetAllAsync(ExampleMapper.ToFilter(request), ct);
 
         logger.LogDebug("Fetched {Count} of {Total} examples.", result.Items.Count, result.Total);
 
