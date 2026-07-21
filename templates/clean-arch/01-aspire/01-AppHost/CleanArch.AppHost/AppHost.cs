@@ -10,7 +10,7 @@ IResourceBuilder<ParameterResource> postgresPassword = builder.AddParameter(
 IResourceBuilder<PostgresDatabaseResource> database = builder
     .AddPostgres("postgres", password: postgresPassword)
     .WithDataVolume()
-    .AddDatabase("database");
+    .AddDatabase("DefaultConnection", databaseName: "cleanarchdb");
 
 builder.AddProject<Projects.CleanArch_Api>("api")
     .WithReference(database)
