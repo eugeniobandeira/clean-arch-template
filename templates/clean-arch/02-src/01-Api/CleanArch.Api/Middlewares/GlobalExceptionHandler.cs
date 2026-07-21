@@ -1,7 +1,7 @@
+﻿using System.Diagnostics;
 using CleanArch.Domain.Constants;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace CleanArch.Api.Middlewares;
 

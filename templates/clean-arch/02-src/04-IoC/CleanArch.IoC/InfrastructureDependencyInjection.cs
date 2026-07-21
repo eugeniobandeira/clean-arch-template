@@ -22,7 +22,7 @@ internal static class InfrastructureDependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddDbContext(
+    private static void AddDbContext(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -30,12 +30,10 @@ internal static class InfrastructureDependencyInjection
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(connectionString));
-
-        return services;
+            options.UseNpgsql(connectionString));
     }
 
-    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    private static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -45,7 +43,5 @@ internal static class InfrastructureDependencyInjection
         services.AddScoped<IGetByIdRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
         services.AddScoped<IUpdateRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
         services.AddScoped<IDeleteRepository<ExampleEntity>>(sp => sp.GetRequiredService<ExampleRepository>());
-
-        return services;
     }
 }

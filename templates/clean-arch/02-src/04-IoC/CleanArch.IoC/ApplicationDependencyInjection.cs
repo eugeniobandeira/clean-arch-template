@@ -5,6 +5,7 @@ using CleanArch.Application.Features.Examples.Handlers.Create.Validator;
 using CleanArch.Application.Features.Examples.Handlers.Delete;
 using CleanArch.Application.Features.Examples.Handlers.GetAll;
 using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
+using CleanArch.Application.Features.Examples.Handlers.GetAll.Validator;
 using CleanArch.Application.Features.Examples.Handlers.GetById;
 using CleanArch.Application.Features.Examples.Handlers.Update;
 using CleanArch.Application.Features.Examples.Handlers.Update.Request;
@@ -23,6 +24,7 @@ internal static class ApplicationDependencyInjection
     {
         services.AddScoped<IValidator<CreateExampleRequest>, CreateExampleValidator>();
         services.AddScoped<IValidator<UpdateExampleRequest>, UpdateExampleValidator>();
+        services.AddScoped<IValidator<GetAllExampleRequest>, GetAllExampleValidator>();
 
         services.AddScoped<IHandler<CreateExampleRequest, ExampleEntity>, CreateExampleHandler>();
         services.AddScoped<IHandler<Guid, Deleted>, DeleteExampleHandler>();

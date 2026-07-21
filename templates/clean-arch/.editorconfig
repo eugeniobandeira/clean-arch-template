@@ -434,6 +434,11 @@ insert_final_newline     = true
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 
+# EF Core migrations (scaffolded by `dotnet ef migrations add`, not hand-written)
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+
 # ─── Test projects (relax some rules) ────────────────────────────────────────
 [*.Tests.{Unit,Integration,Validators,Handlers,Repositories}/**/*.cs]
 dotnet_diagnostic.CA1062.severity   = none    # No null checks needed on test inputs

@@ -1,7 +1,7 @@
-using CleanArch.Application.Common.Handler;
-using CleanArch.Domain.Interfaces;
+﻿using CleanArch.Application.Common.Handler;
 using CleanArch.Domain.Constants;
 using CleanArch.Domain.Entities;
+using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Interfaces.Common;
 using ErrorOr;
 using Microsoft.Extensions.Logging;
@@ -14,11 +14,11 @@ public sealed class DeleteExampleHandler(
     IUnitOfWork unitOfWork,
     ILogger<DeleteExampleHandler> logger) : IHandler<Guid, Deleted>
 {
-    public async Task<ErrorOr<Deleted>> Handle(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<Deleted>> Handle(Guid id, CancellationToken ct = default)
     {
         logger.LogInformation("Deleting example. Id={Id}", id);
 
-        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(id, cancellationToken);
+        ExampleEntity? entity = await getByIdRepository.GetByIdAsync(id, ct);
 
         if (entity is null)
         {
@@ -26,8 +26,8 @@ public sealed class DeleteExampleHandler(
             return Error.NotFound(ExampleErrorCodes.NotFound, $"Example {id} not found.");
         }
 
-        await deleteRepository.DeleteAsync(entity, cancellationToken);
-        await unitOfWork.CommitAsync(cancellationToken);
+        await deleteRepository.DeleteAsync(entity, ct);
+        await unitOfWork.CommitAsync(ct);
 
         logger.LogInformation("Example deleted successfully. Response={@Response}", entity);
 

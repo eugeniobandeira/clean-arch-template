@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace CleanArch.AppHost;
 
@@ -35,7 +35,7 @@ internal static class ResourceBuilderExtensions
                     return new ExecuteCommandResult
                     {
                         Success = false,
-                        ErrorMessage = "Invalid operation: " + ex.Message
+                        Message = "Invalid operation: " + ex.Message
                     };
                 }
             },

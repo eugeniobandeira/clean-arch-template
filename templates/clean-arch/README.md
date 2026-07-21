@@ -108,7 +108,7 @@ Every use case implements `IHandler<TRequest, TResponse>`, returning `ErrorOr<T>
 ```csharp
 public interface IHandler<TRequest, TResponse>
 {
-    Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken cancellationToken = default);
+    Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken ct = default);
 }
 ```
 
@@ -334,7 +334,7 @@ Configured via `appsettings.json`. Update the allowed origins before going to pr
 Business logic never throws — it returns `ErrorOr<T>`. Endpoints map the result to HTTP responses:
 
 ```csharp
-ErrorOr<ExampleEntity> result = await handler.Handle(request, cancellationToken);
+ErrorOr<ExampleEntity> result = await handler.Handle(request, ct);
 
 return result.Match(
     entity => Results.Ok(entity.ToResponse()),
@@ -385,15 +385,54 @@ After running `dotnet new clean-arch -n MyProject`, complete the following steps
 
 ### 1. Replace the connection string
 
-In `appsettings.json`:
+The template uses PostgreSQL (Npgsql) via EF Core. `appsettings.json` ships with a local development default:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "your-real-connection-string"
+  "DefaultConnection": "Host=localhost;Port=5432;Database=CleanArchDb;Username=postgres;Password=postgres"
 }
 ```
 
-### 2. Implement the repository
+Running via the Aspire AppHost (`dotnet run` in `01-aspire/01-AppHost/CleanArch.AppHost`) provisions a PostgreSQL container automatically (requires Docker running) and injects the connection string for you — no manual setup needed for local development. Replace the value above only if you run the API standalone against a different database.
+
+### 2. Run database migrations
+
+The template ships with EF Core (`Microsoft.EntityFrameworkCore.Tools` is already referenced on `CleanArch.IoC`). `AppDbContext` lives in `CleanArch.Infrastructure`, and it's wired up via `CleanArch.Api` (the startup project), so every `dotnet ef` command needs both `--project` (where the context lives) and `--startup-project` (where the DI/configuration lives).
+
+Install the tool once, if you don't have it yet:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+**Create a migration** whenever you change an entity or `AppDbContext.OnModelCreating`:
+
+```bash
+dotnet ef migrations add <MigrationName> \
+  --project 02-src/05-Infrastructure/CleanArch.Infrastructure \
+  --startup-project 02-src/01-Api/CleanArch.Api \
+  --output-dir Context/Migrations
+```
+
+**Apply migrations to your local database:**
+
+The AppHost provisions the PostgreSQL container and gives you the connection string, but it does not apply migrations for you — run this once against it (with the AppHost, or any local PostgreSQL instance, already up):
+
+```bash
+dotnet ef database update \
+  --project 02-src/05-Infrastructure/CleanArch.Infrastructure \
+  --startup-project 02-src/01-Api/CleanArch.Api
+```
+
+**Remove the last migration** (only if it hasn't been applied yet):
+
+```bash
+dotnet ef migrations remove \
+  --project 02-src/05-Infrastructure/CleanArch.Infrastructure \
+  --startup-project 02-src/01-Api/CleanArch.Api
+```
+
+### 3. Implement the repository
 
 Open `Infrastructure/Repositories/ExampleRepository.cs` and implement the methods using your chosen persistence technology (EF Core, Dapper, MongoDB, etc.):
 
@@ -404,7 +443,7 @@ public sealed class ExampleRepository : IExampleRepository
 }
 ```
 
-### 3. Update CORS origins
+### 4. Update CORS origins
 
 In `appsettings.json`, replace the placeholder with your frontend URL:
 
@@ -414,7 +453,7 @@ In `appsettings.json`, replace the placeholder with your frontend URL:
 }
 ```
 
-### 4. Update OpenAPI contact info
+### 5. Update OpenAPI contact info
 
 In `appsettings.json`:
 
@@ -425,11 +464,11 @@ In `appsettings.json`:
 }
 ```
 
-### 5. Configure observability (optional)
+### 6. Configure observability (optional)
 
 Set `OTEL_EXPORTER_OTLP_ENDPOINT` to point to your collector. Leave it empty to disable export during local development.
 
-### 6. Replace the Example stubs
+### 7. Replace the Example stubs
 
 The `Example*` files throughout the project are working stubs that demonstrate all patterns end-to-end. Use them as a reference, then replace them with your own features.
 
