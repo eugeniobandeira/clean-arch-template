@@ -104,5 +104,23 @@ namespace CleanArch.Domain.MessageResource {
                 return ResourceManager.GetString("EXAMPLE_NOT_FOUND", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Page must be greater than or equal to {MinPage}..
+        /// </summary>
+        public static string PAGE_INVALID {
+            get {
+                return ResourceManager.GetString("PAGE_INVALID", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to PageSize must be between {MinPageSize} and {MaxPageSize}..
+        /// </summary>
+        public static string PAGE_SIZE_INVALID {
+            get {
+                return ResourceManager.GetString("PAGE_SIZE_INVALID", resourceCulture);
+            }
+        }
     }
 }

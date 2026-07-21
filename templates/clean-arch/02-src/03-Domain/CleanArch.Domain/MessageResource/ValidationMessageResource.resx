@@ -53,4 +53,10 @@
   <data name="DESCRIPTION_MAX_LENGTH" xml:space="preserve">
     <value>Description must not exceed {MaxLength} characters.</value>
   </data>
+  <data name="PAGE_INVALID" xml:space="preserve">
+    <value>Page must be greater than or equal to {MinPage}.</value>
+  </data>
+  <data name="PAGE_SIZE_INVALID" xml:space="preserve">
+    <value>PageSize must be between {MinPageSize} and {MaxPageSize}.</value>
+  </data>
 </root>
