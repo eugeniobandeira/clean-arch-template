@@ -3,13 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsAspireHost>true</IsAspireHost>
+    <!-- DCP and the dashboard come from NuGet packages, so the Aspire CLI bundle is not required. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\01-aspire\02-ServiceDefaults\CleanArch.ServiceDefaults\CleanArch.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\..\02-src\01-Api\CleanArch.Api\CleanArch.Api.csproj" />
   </ItemGroup>
 </Project>
