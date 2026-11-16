@@ -1,4 +1,4 @@
-namespace CleanArch.Api.Endpoints;
+﻿namespace CleanArch.Api.Endpoints;
 
 internal static class Tags
 {

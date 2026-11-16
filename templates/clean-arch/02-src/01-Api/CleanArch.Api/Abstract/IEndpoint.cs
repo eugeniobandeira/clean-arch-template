@@ -1,4 +1,4 @@
-namespace CleanArch.Api.Abstract;
+﻿namespace CleanArch.Api.Abstract;
 
 internal interface IEndpoint
 {

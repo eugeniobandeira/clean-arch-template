@@ -1,4 +1,4 @@
-using CleanArch.Domain.Constants;
+﻿using CleanArch.Domain.Constants;
 using ErrorOr;
 
 namespace CleanArch.Api.Extensions;

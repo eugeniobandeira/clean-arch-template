@@ -1,4 +1,4 @@
-using CleanArch.Domain.Constants;
+﻿using CleanArch.Domain.Constants;
 using CleanArch.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

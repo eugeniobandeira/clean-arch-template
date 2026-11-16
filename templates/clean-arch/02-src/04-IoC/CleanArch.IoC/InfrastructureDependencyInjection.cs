@@ -1,4 +1,4 @@
-using CleanArch.Domain.Entities;
+﻿using CleanArch.Domain.Entities;
 using CleanArch.Domain.Interfaces;
 using CleanArch.Domain.Interfaces.Common;
 using CleanArch.Domain.Interfaces.Examples;

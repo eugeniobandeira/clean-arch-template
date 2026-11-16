@@ -1,4 +1,4 @@
-namespace CleanArch.Domain.Interfaces.Common;
+﻿namespace CleanArch.Domain.Interfaces.Common;
 
 public interface IUpdateRepository<in T> where T : class
 {

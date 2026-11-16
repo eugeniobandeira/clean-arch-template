@@ -1,4 +1,4 @@
-using CleanArch.Application.Common.Handler;
+﻿using CleanArch.Application.Common.Handler;
 using CleanArch.Application.Extensions;
 using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
 using CleanArch.Application.Features.Examples.Mapper;

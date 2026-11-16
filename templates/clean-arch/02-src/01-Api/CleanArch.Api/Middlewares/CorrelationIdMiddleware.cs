@@ -1,4 +1,4 @@
-using CleanArch.Domain.Constants;
+﻿using CleanArch.Domain.Constants;
 using Microsoft.Extensions.Primitives;
 using Serilog.Context;
 

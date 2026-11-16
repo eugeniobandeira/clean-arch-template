@@ -1,4 +1,4 @@
-using CleanArch.Api.Abstract;
+﻿using CleanArch.Api.Abstract;
 
 namespace CleanArch.Api.Endpoints.Health;
 

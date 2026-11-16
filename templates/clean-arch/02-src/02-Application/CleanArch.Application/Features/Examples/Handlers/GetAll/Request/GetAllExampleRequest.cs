@@ -1,4 +1,4 @@
-namespace CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
+﻿namespace CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
 
 public sealed record GetAllExampleRequest(
     int Page,

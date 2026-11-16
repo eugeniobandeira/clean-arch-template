@@ -1,4 +1,4 @@
-using Microsoft.OpenApi;
+﻿using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 namespace CleanArch.Api.Extensions;
