@@ -1,0 +1,3 @@
+# Normalize line endings to LF in the repository and working tree,
+# matching end_of_line = lf in templates/clean-arch/.editorconfig.
+* text=auto eol=lf
