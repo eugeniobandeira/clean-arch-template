@@ -18,9 +18,19 @@
     </PackageReference>
   </ItemGroup>
 
+  <!--
+    Every project imports this file and builds in parallel, so writing .git/config on each build
+    makes the projects race for its lock. Read the current value first and write only when it differs.
+  -->
   <Target Name="ConfigureGitHooks" BeforeTargets="Build" Condition="'$(CI)' == ''">
-    <Exec Command="git config core.hooksPath $(MSBuildThisFileDirectory).hooks" ContinueOnError="true" />
-    <Exec Command="chmod +x $(MSBuildThisFileDirectory).hooks/pre-commit" ContinueOnError="true" />
+    <PropertyGroup>
+      <_GitHooksPath>$(MSBuildThisFileDirectory).hooks</_GitHooksPath>
+    </PropertyGroup>
+    <Exec Command="git config --get core.hooksPath" ConsoleToMSBuild="true" IgnoreExitCode="true" EchoOff="true" StandardOutputImportance="low" StandardErrorImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_CurrentGitHooksPath" />
+    </Exec>
+    <Exec Condition="'$(_CurrentGitHooksPath)' != '$(_GitHooksPath)'" Command="git config core.hooksPath &quot;$(_GitHooksPath)&quot;" ContinueOnError="true" />
+    <Exec Condition="'$(_CurrentGitHooksPath)' != '$(_GitHooksPath)'" Command="chmod +x &quot;$(_GitHooksPath)/pre-commit&quot;" ContinueOnError="true" />
   </Target>
 
 </Project>
