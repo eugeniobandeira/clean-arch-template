@@ -1,4 +1,4 @@
-using Bogus;
+﻿using Bogus;
 using CleanArch.Domain.Entities;
 
 namespace CleanArch.Tests.Common.Builders;

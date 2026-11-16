@@ -1,4 +1,4 @@
-namespace CleanArch.Application.Features.Examples;
+﻿namespace CleanArch.Application.Features.Examples;
 
 public sealed record ExampleResponse(
     Guid Id,

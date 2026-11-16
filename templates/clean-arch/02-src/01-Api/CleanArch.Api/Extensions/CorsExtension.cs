@@ -1,4 +1,4 @@
-namespace CleanArch.Api.Extensions;
+﻿namespace CleanArch.Api.Extensions;
 
 internal static class CorsExtension
 {

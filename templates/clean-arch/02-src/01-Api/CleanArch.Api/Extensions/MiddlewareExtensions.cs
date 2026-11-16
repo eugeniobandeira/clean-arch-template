@@ -1,4 +1,4 @@
-using CleanArch.Api.Middlewares;
+﻿using CleanArch.Api.Middlewares;
 
 namespace CleanArch.Api.Extensions;
 

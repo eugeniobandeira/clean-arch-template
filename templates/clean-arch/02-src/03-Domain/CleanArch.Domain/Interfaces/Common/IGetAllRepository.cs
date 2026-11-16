@@ -1,4 +1,4 @@
-using CleanArch.Domain.Common;
+﻿using CleanArch.Domain.Common;
 
 namespace CleanArch.Domain.Interfaces.Common;
 

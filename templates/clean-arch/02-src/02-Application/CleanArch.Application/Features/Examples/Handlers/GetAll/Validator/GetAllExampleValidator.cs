@@ -1,4 +1,4 @@
-using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
+﻿using CleanArch.Application.Features.Examples.Handlers.GetAll.Request;
 using CleanArch.Domain.Constants;
 using CleanArch.Domain.MessageResource;
 using FluentValidation;

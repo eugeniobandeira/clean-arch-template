@@ -1,4 +1,4 @@
-namespace CleanArch.Domain.Filters.Examples;
+﻿namespace CleanArch.Domain.Filters.Examples;
 
 public sealed record ExampleFilter(
     int Page,

@@ -1,4 +1,4 @@
-namespace CleanArch.Application.Common.Response;
+﻿namespace CleanArch.Application.Common.Response;
 
 public sealed record ApiListResponse<T>(
     IReadOnlyCollection<T> Data,

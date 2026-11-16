@@ -1,4 +1,4 @@
-using CleanArch.Domain.Entities;
+﻿using CleanArch.Domain.Entities;
 using CleanArch.Infrastructure.Context.Configurations;
 using Microsoft.EntityFrameworkCore;
 

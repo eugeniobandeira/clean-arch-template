@@ -1,4 +1,4 @@
-namespace CleanArch.Domain.Constants;
+﻿namespace CleanArch.Domain.Constants;
 
 public static class ExampleErrorCodes
 {
