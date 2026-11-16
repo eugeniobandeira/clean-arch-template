@@ -28,6 +28,6 @@ public sealed class GetAllExampleHandler(
 
         logger.LogDebug("Fetched {Count} of {Total} examples.", result.Items.Count, result.Total);
 
-        return ErrorOrFactory.From(result);
+        return result;
     }
 }
